@@ -7,6 +7,9 @@ license = { text = "MIT License" }
 authors = [
     { name = "Breno RdV", email = "hello@raccoon.ninja" },
 ]
+maintainers = [
+    { name = "Breno RdV", email = "hello@raccoon.ninja" },
+]
 homepage = "https://github.com/brenordv/pypi-raccoon-tools"
 keywords = ["retry", "decorator", "benchmark", "logging", "requests", "json", "file operations", "serialization", "http", "utilities", "tools", "helpers", "python"]
 classifiers = [
@@ -21,14 +24,6 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-
-[project.urls]
-"Source" = "https://github.com/brenordv/pypi-raccoon-tools"
-"Bug Tracker" = "https://github.com/brenordv/pypi-raccoon-tools/issues"
-"Changelog" = "https://github.com/brenordv/pypi-raccoon-tools/blob/master/changelog.md"
-"Author" = "https://raccoon.ninja"
-
-[project.dependencies]
 dependencies = [
     "raccoon-simple-stopwatch==0.0.3",
     "simple-log-factory==0.0.1",
@@ -36,6 +31,12 @@ dependencies = [
     "pydantic>=1.8.2",
     "typing-extensions>=3.7.4.3"
 ]
+
+[project.urls]
+"Source" = "https://github.com/brenordv/pypi-raccoon-tools"
+"Bug Tracker" = "https://github.com/brenordv/pypi-raccoon-tools/issues"
+"Changelog" = "https://github.com/brenordv/pypi-raccoon-tools/blob/master/changelog.md"
+"Author" = "https://raccoon.ninja"
 
 [build-system]
 requires = ["setuptools>=42", "wheel"]
