@@ -29,11 +29,13 @@ classifiers = [
 "Author" = "https://raccoon.ninja"
 
 [project.dependencies]
-"raccoon-simple-stopwatch" = "==0.0.3"
-"simple-log-factory" = "==0.0.1"
-"requests" = ">=2.25.0"
-"pydantic" = ">=1.8.2"
-"typing-extensions" = ">=3.7.4.3"
+dependencies = [
+    "raccoon-simple-stopwatch==0.0.3",
+    "simple-log-factory==0.0.1",
+    "requests>=2.25.0",
+    "pydantic>=1.8.2",
+    "typing-extensions>=3.7.4.3"
+]
 
 [build-system]
 requires = ["setuptools>=42", "wheel"]
