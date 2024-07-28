@@ -16,11 +16,17 @@ setup(
     author_email="hello@raccoon.ninja",
     url="https://github.com/brenordv/pypi-raccoon-tools",
     project_urls={
+        "Source": "https://github.com/brenordv/pypi-raccoon-tools",
         "Bug Tracker": "https://github.com/brenordv/pypi-raccoon-tools/issues",
+        "Changelog": "https://github.com/brenordv/pypi-raccoon-tools/blob/master/changelog.md",
         "Author": "https://raccoon.ninja"
     },
     packages=find_packages(),
     classifiers=[
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Information Technology",
+        "Topic :: Software Development :: Libraries :: Python Modules",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
