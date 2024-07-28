@@ -30,6 +30,7 @@ dependencies = [
     "pydantic>=1.8.2",
     "typing-extensions>=3.7.4.3"
 ]
+requires-python = ">=3.9"
 
 [project.urls]
 "Homepage" = "https://github.com/brenordv/pypi-raccoon-tools"
@@ -37,7 +38,6 @@ dependencies = [
 "Bug Tracker" = "https://github.com/brenordv/pypi-raccoon-tools/issues"
 "Changelog" = "https://github.com/brenordv/pypi-raccoon-tools/blob/master/changelog.md"
 "Author" = "https://raccoon.ninja"
-
 
 [build-system]
 requires = ["setuptools>=42", "wheel"]
