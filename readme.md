@@ -36,6 +36,51 @@ A decorator that benchmarks the execution time of a function.
 The results are logged using the logging module at the INFO level. 
 The decorated function can also provide benchmark information via the `get_benchmark_info` method.
 
+## Generators
+
+### `infinite_iterator`
+Generates an infinite iterator from a list.
+
+**Parameters:**
+- `list_to_iterate_over`: The list to iterate over.
+
+### `read_line`
+Reads a file line by line.
+
+**Parameters:**
+- `file`: Path to the file.
+- `strip_line`: Strip whitespace from the beginning and end of each line (default: True).
+- `encoding`: File encoding (default: 'utf-8').
+- `buffer_size`: Size of the read buffer in bytes. If None, the default system buffer is used.
+
+### `id_guid_generator`
+Generates unique GUID (Globally Unique Identifier) strings.
+
+**Parameters:**
+- `ids_to_generate`: The number of GUIDs to generate. If None, generates indefinitely.
+
+### `id_int_generator`
+Generates integer IDs with optional validation.
+
+**Parameters:**
+- `ids_to_generate`: The number of IDs to generate. If None, generates indefinitely.
+- `start_at`: The starting value for the ID sequence (default: 0).
+- `validate_id`: A function to validate each ID. If None, all IDs are considered valid.
+
+### `timestamp_generator`
+Generates Unix timestamps.
+
+**Parameters:**
+- `timestamps_to_generate`: The number of timestamps to generate. If None, generates indefinitely.
+
+### `sentence_generator`
+Generates Lorem Ipsum sentences with lengths ranging from min_length to max_length.
+
+**Parameters:**
+- `sentences_to_generate`: The number of sentences to generate. If None, generates indefinitely.
+- `min_length`: The minimum length of each sentence (default: 1).
+- `max_length`: The maximum length of each sentence. If None, a random value between 10 and 512 is used for each sentence.
+
 ## Shared Utilities
 
 ### `file_ops`
