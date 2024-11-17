@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 MAJOR = 1
 MINOR = 1
-BUILD = 0
+BUILD = 1
 VERSION = f"{MAJOR}.{MINOR}.{BUILD}"
 
 setup(

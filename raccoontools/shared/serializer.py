@@ -32,24 +32,31 @@ def obj_to_dict(obj) -> dict:
     return obj
 
 
-def serialize_to_dict(obj) -> Union[dict, List[dict], None]:
+def serialize_to_dict(obj, obj_serializer: callable = None) -> Union[dict, List[dict], None]:
     """
     Serialize obj to a dict or a list of dicts. Useful when sending complex objects in http requests.
     If the obj passed is a dict, will iterate over all the properties and convert them to dicts.
     Remarks: This scans the object recursively.
 
     :param obj: The object to be serialized
+    :param obj_serializer: A custom serializer function to be used when serializing the object. (Default: obj_dump_serializer)
     :return: The serialized JSON object or None if the object is None.
     """
     if obj is None:
         return None
+
+    if obj_serializer is None:
+        obj_serializer = obj_dump_serializer
 
     if isinstance(obj, list):
         serialized = [obj_to_dict(item) for item in obj]
     elif isinstance(obj, dict):
         serialized = {}
         for key, value in obj.items():
-            serialized[key] = serialize_to_dict(value)
+            if isinstance(value, (str, int, float, bool)):
+                serialized[key] = obj_serializer(value)
+            else:
+                serialized[key] = serialize_to_dict(value)
     else:
         serialized = obj_to_dict(obj)
 
@@ -92,6 +99,7 @@ def csv_string_to_dict_list(
 def dataset_to_prompt_text(dataset: List[dict]) -> str:
     """
     Converts a dataset to a prompt text.
+    TODO: Explain a bit better what does this function do, and how to use it.
     :param dataset: The dataset.
     :return: The prompt text.
     """
@@ -113,7 +121,7 @@ def dataset_to_prompt_text(dataset: List[dict]) -> str:
     return str(data)
 
 
-def obj_dump_serializer(obj):
+def obj_dump_serializer(obj, deep_serialization: bool = True, pathlib_obj_tag: str = _PATH_LIB_OBJ_TAG):
     """
     Used to serialize objects when saving data to file.
 
@@ -123,19 +131,43 @@ def obj_dump_serializer(obj):
      will be used for deserialization.
 
     :param obj: The object to serialize.
+    :param deep_serialization: If true, will serialize nested objects inside a list or set.
+    :param pathlib_obj_tag: The tag to use when serializing Path objects. (Default: [PATHLIBOBJ])
     :return: The serialized object.
     """
     if isinstance(obj, datetime):
         return obj.isoformat()
+
     elif isinstance(obj, Path):
-        return f"{_PATH_LIB_OBJ_TAG}{obj.absolute()}"
+        return f"{pathlib_obj_tag}{obj.absolute()}"
+
     elif isinstance(obj, set):
-        return list(obj)
+        try:
+            set_as_list = sorted(obj)
+        except TypeError:
+            set_as_list = list(obj)
 
-    return obj
+        if not deep_serialization:
+            return set_as_list
+
+        return [obj_dump_serializer(item, deep_serialization, pathlib_obj_tag) for item in set_as_list]
+
+    elif isinstance(obj, list) and deep_serialization:
+        return [obj_dump_serializer(item, deep_serialization, pathlib_obj_tag) for item in obj]
+
+    elif isinstance(obj, dict) and deep_serialization:
+        return {obj_dump_serializer(k, deep_serialization, pathlib_obj_tag): obj_dump_serializer(v, deep_serialization, pathlib_obj_tag) for k, v in obj.items()}
+
+    elif isinstance(obj, str):
+        return obj
+
+    try:
+        return str(obj)
+    except Exception as e:
+        raise TypeError(f"Object of type {type(obj)} is not serializable") from e
 
 
-def obj_dump_deserializer(obj):
+def obj_dump_deserializer(obj, pathlib_obj_tag: str = _PATH_LIB_OBJ_TAG):
     """
     Used to deserialize objects when loading data from file.
 
@@ -145,21 +177,30 @@ def obj_dump_deserializer(obj):
     does not check or guarantee that the path exists.
 
     :param obj: The object to deserialize.
+    :param pathlib_obj_tag: The tag to use when deserializing Path objects. (Default: [PATHLIBOBJ])
     :return: The deserialized object.
     """
     if isinstance(obj, dict):
-        return {k: obj_dump_deserializer(v) for k, v in obj.items()}
-
-    if not isinstance(obj, str):
-        return obj
+        return {obj_dump_deserializer(k, pathlib_obj_tag): obj_dump_deserializer(v, pathlib_obj_tag) for k, v in obj.items()}
 
     try:
         return datetime.fromisoformat(obj)
     except (TypeError, ValueError):
         pass
 
-    if obj.startswith(_PATH_LIB_OBJ_TAG):
-        path = Path(obj.split(_PATH_LIB_OBJ_TAG)[1])
+    try:
+        return int(obj)
+    except (TypeError, ValueError):
+        pass
+
+    try:
+        return float(obj)
+    except (TypeError, ValueError):
+        pass
+
+    if isinstance(obj, str) and obj.startswith(pathlib_obj_tag):
+        path = Path(obj[len(pathlib_obj_tag):])
         return path
+
 
     return obj
