@@ -1,4 +1,10 @@
 # Changelog
+## [1.1.1]
+### Bug fixes
+- `serialize_to_dict`: Fixed bug when serializing simple objects.
+- `obj_dump_serializer`: Improved usability;
+- `obj_dump_deserializer`: Improved usability;
+
 ## [1.1.0]
 ### Added generators
 - `infinite_iterator` generator to create an infinite iterator from a list.
