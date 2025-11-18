@@ -1,5 +1,9 @@
 # Changelog
 ## [1.2.0]
+### General
+- Updated documentation.
+- Updated dependency versions.
+
 ### Added generators
 - `read_csv`: Read CSV files into a list of dictionaries + metadata, line by line.
 
