@@ -53,6 +53,15 @@ Reads a file line by line.
 - `encoding`: File encoding (default: 'utf-8').
 - `buffer_size`: Size of the read buffer in bytes. If None, the default system buffer is used.
 
+### `read_csv`
+Reads a CSV file line by line, yielding each line as a dictionary + metadata.
+
+**Parameters:**
+- `file`: Path to the CSV file.
+- `encoding`: File encoding (default: 'utf-8').
+- `has_headerss`: If True, the first line of the CSV file is treated as a header.
+- `buffer_size`: Size of the read buffer in bytes. If None, the default system buffer is used.
+
 ### `id_guid_generator`
 Generates unique GUID (Globally Unique Identifier) strings.
 

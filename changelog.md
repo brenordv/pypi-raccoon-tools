@@ -1,4 +1,11 @@
 # Changelog
+## [1.2.0]
+### Added generators
+- `read_csv`: Read CSV files into a list of dictionaries + metadata, line by line.
+
+### Bug fixes
+- `read_line`: Fixed bug related to the default value for `buffer_size` parameter.
+
 ## [1.1.1]
 ### Bug fixes
 - `serialize_to_dict`: Fixed bug when serializing simple objects.
@@ -15,4 +22,4 @@
 - `sentence_generator` to generate Lorem Ipsum 
 
 ## [1.0.0]
-Initial version of the package
+- Initial version of the package
