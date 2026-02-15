@@ -1,4 +1,8 @@
 # Changelog
+## [1.2.1]
+### General
+- Updated dependency versions.
+
 ## [1.2.0]
 ### General
 - Updated documentation.
