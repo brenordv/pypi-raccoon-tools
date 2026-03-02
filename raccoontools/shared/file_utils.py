@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import Tuple
 from uuid import uuid4
 
@@ -34,7 +34,7 @@ def get_filename_for_new_file(
         filename_parts.append(prefix)
 
     if add_current_datetime_as_format:
-        now = datetime.utcnow() if use_utc else datetime.now()
+        now = datetime.now(tz=UTC) if use_utc else datetime.now()
         current_datetime = now.strftime(add_current_datetime_as_format)
         filename_parts.append(current_datetime)
 
