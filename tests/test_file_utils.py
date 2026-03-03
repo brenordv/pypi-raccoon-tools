@@ -1,4 +1,5 @@
 import re
+from datetime import datetime, timezone
 from unittest.mock import patch
 
 import pytest
@@ -75,3 +76,20 @@ class TestGetFilenameForNewFile:
         # Both should produce valid filenames
         assert f1.endswith(".json")
         assert f2.endswith(".json")
+
+    def test_utc_produces_timezone_aware_datetime(self):
+        """UTC compat: datetime.now(tz=UTC) must work on all supported Pythons."""
+        with patch(
+            "raccoontools.shared.file_utils.datetime"
+        ) as mock_dt:
+            mock_dt.now.return_value = datetime(
+                2024, 6, 15, 12, 0, 0, tzinfo=timezone.utc
+            )
+            mock_dt.side_effect = lambda *a, **kw: datetime(*a, **kw)
+
+            filename = get_filename_for_new_file(
+                "json", use_utc=True, unique_identifier=False
+            )
+            mock_dt.now.assert_called_once()
+            call_kwargs = mock_dt.now.call_args
+            assert call_kwargs.kwargs.get("tz") is not None
