@@ -14,9 +14,10 @@
 - `obj_to_dict`: Replaced deprecated Pydantic v1 `.dict()` with `.model_dump()`.
 - `get_headers`: Fixed `Authorization: Bearer None` being emitted when token is `None` or empty.
 - `get_filename_for_new_file`: Fixed incorrect type hint (`Tuple[str, bool]` → `Union[str, bool]`).
+- `serialize_to_dict`: Fixed primitive dict values (`int`, `float`, `bool`) being silently converted to strings.
 
 ### Added
-- Comprehensive test suite (122 tests) covering all modules.
+- Comprehensive test suite covering all modules.
 
 ## [1.2.1]
 ### General

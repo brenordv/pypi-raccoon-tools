@@ -75,6 +75,35 @@ class TestSerializeToDict:
         result = serialize_to_dict(data)
         assert result["inner"] == {"val": 5}
 
+    def test_dict_preserves_int_values(self):
+        """Bug 7 regression: int values must not be converted to strings."""
+        result = serialize_to_dict({"count": 42})
+        assert result["count"] == 42
+        assert isinstance(result["count"], int)
+
+    def test_dict_preserves_float_values(self):
+        """Bug 7 regression: float values must not be converted to strings."""
+        result = serialize_to_dict({"score": 9.5})
+        assert result["score"] == 9.5
+        assert isinstance(result["score"], float)
+
+    def test_dict_preserves_bool_values(self):
+        """Bug 7 regression: bool values must not be converted to strings."""
+        result = serialize_to_dict({"active": True, "deleted": False})
+        assert result["active"] is True
+        assert result["deleted"] is False
+
+    def test_dict_preserves_string_values(self):
+        result = serialize_to_dict({"name": "Alice"})
+        assert result["name"] == "Alice"
+        assert isinstance(result["name"], str)
+
+    def test_dict_preserves_mixed_primitives(self):
+        """Bug 7 regression: all primitive types preserved in a single dict."""
+        data = {"name": "Alice", "age": 30, "active": True, "score": 9.5}
+        result = serialize_to_dict(data)
+        assert result == data
+
 
 # ---------------------------------------------------------------------------
 # obj_dump_serializer

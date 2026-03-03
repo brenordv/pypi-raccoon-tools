@@ -54,7 +54,7 @@ def serialize_to_dict(obj, obj_serializer: callable = None) -> Union[dict, List[
         serialized = {}
         for key, value in obj.items():
             if isinstance(value, (str, int, float, bool)):
-                serialized[key] = obj_serializer(value)
+                serialized[key] = value
             else:
                 serialized[key] = serialize_to_dict(value)
     else:
