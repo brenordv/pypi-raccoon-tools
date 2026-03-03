@@ -99,7 +99,7 @@ def csv_string_to_dict_list(
     elif isinstance(data, list):
         result = []
         for d in data:
-            parsed = csv_string_to_dict_list(d)
+            parsed = csv_string_to_dict_list(d, no_data_return=no_data_return)
             if isinstance(parsed, list):
                 result.extend(parsed)
         return result
