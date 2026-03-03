@@ -18,6 +18,7 @@
 - `csv_string_to_dict_list`: Fixed `dict` and `List[dict]` inputs causing character explosion; dicts are now passed through as-is.
 
 ### Added
+- `load_json_from_file`: Added optional `object_hook` parameter to control JSON deserialization. Pass `None` to disable automatic type coercion (numeric strings, dates).
 - Comprehensive test suite covering all modules.
 
 ## [1.2.1]

@@ -81,6 +81,45 @@ class TestSaveJsonToFile:
         assert "\n" not in content.strip() or content.count("\n") <= 1
 
 
+class TestLoadJsonObjectHook:
+    def test_default_hook_coerces_numeric_strings(self, tmp_path):
+        """Default behavior: string '42' is coerced to int 42."""
+        file = tmp_path / "data.json"
+        file.write_text('{"zip_code": "90210"}', encoding="utf-8")
+
+        result = load_json_from_file(file)
+        assert result["zip_code"] == 90210
+        assert isinstance(result["zip_code"], int)
+
+    def test_none_hook_preserves_strings(self, tmp_path):
+        """Bug 10 fix: passing None disables type coercion."""
+        file = tmp_path / "data.json"
+        file.write_text('{"zip_code": "90210"}', encoding="utf-8")
+
+        result = load_json_from_file(file, object_hook=None)
+        assert result["zip_code"] == "90210"
+        assert isinstance(result["zip_code"], str)
+
+    def test_none_hook_preserves_date_strings(self, tmp_path):
+        file = tmp_path / "data.json"
+        file.write_text('{"date": "2024-01-15"}', encoding="utf-8")
+
+        result = load_json_from_file(file, object_hook=None)
+        assert result["date"] == "2024-01-15"
+        assert isinstance(result["date"], str)
+
+    def test_custom_hook(self, tmp_path):
+        """Callers can provide their own object_hook."""
+        file = tmp_path / "data.json"
+        file.write_text('{"key": "value"}', encoding="utf-8")
+
+        def upper_values(obj):
+            return {k: v.upper() if isinstance(v, str) else v for k, v in obj.items()}
+
+        result = load_json_from_file(file, object_hook=upper_values)
+        assert result["key"] == "VALUE"
+
+
 class TestRoundTrip:
     def test_dict_round_trip(self, tmp_path):
         file = tmp_path / "round.json"

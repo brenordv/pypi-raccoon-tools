@@ -1,9 +1,11 @@
 import json
 from pathlib import Path
-from typing import Union, List
+from typing import Callable, Optional, Union, List
 
 from raccoontools.shared.file_utils import get_filename_for_new_file
 from raccoontools.shared.serializer import obj_dump_deserializer, obj_dump_serializer
+
+_USE_DEFAULT_HOOK = object()  # Sentinel to distinguish None from "not provided"
 
 
 _JSON_DUMPS_PARAMS = {
@@ -12,12 +14,19 @@ _JSON_DUMPS_PARAMS = {
 }
 
 
-def load_json_from_file(file: Path, encoding: str = "utf-8") -> Union[dict, List[dict]]:
+def load_json_from_file(
+        file: Path,
+        encoding: str = "utf-8",
+        object_hook: Optional[Callable] = _USE_DEFAULT_HOOK,
+) -> Union[dict, List[dict]]:
     """
     Loads a JSON file and returns the data as dict or List[dict].
 
     :param file: The file to load.
     :param encoding: The encoding of the file. (Default: utf-8)
+    :param object_hook: A function to customize JSON object decoding. By default,
+    uses ``obj_dump_deserializer`` which reconstructs datetime, int, float and Path
+    objects from strings. Pass ``None`` for raw JSON parsing (no type coercion).
     :raises ValueError: If the file is a directory.
     :raises FileNotFoundError: If the file does not exist or cannot be accessed.
     :return: The data from the file.
@@ -28,8 +37,10 @@ def load_json_from_file(file: Path, encoding: str = "utf-8") -> Union[dict, List
     if not file.exists():
         raise FileNotFoundError(f"The file '{file}' does not exist or I cannot access it.")
 
+    hook = obj_dump_deserializer if object_hook is _USE_DEFAULT_HOOK else object_hook
+
     with open(file, "r", encoding=encoding) as f:
-        return json.load(f, object_hook=obj_dump_deserializer)
+        return json.load(f, object_hook=hook)
 
 
 def save_json_to_file(
