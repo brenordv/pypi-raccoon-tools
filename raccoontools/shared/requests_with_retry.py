@@ -95,7 +95,7 @@ def post(url, data=None, json=None, **kwargs) -> requests.Response:
     :param json: (optional) A JSON serializable Python object (not necessarily a dict or List[dict]) to send in the body of the :class:`Request`.
     :param send_json_as_is: (optional) If true, will skip the serialization of the data to dictionary.
     :param kwargs: Optional arguments that ``request`` takes.
-    :return: :class: `Response <Response>` object
+    :return: :class:`Response <Response>` object
     :rtype: requests.Response
     """
     send_as_is = kwargs.pop("send_json_as_is", False)

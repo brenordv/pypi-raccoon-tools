@@ -1,3 +1,4 @@
+import warnings
 from datetime import datetime
 from io import StringIO
 from pathlib import Path
@@ -39,14 +40,19 @@ def serialize_to_dict(obj, obj_serializer: callable = None) -> Union[dict, List[
     Remarks: This scans the object recursively.
 
     :param obj: The object to be serialized
-    :param obj_serializer: A custom serializer function to be used when serializing the object. (Default: obj_dump_serializer)
+    :param obj_serializer: Deprecated. This parameter is no longer used and will be removed in a future version.
     :return: The serialized JSON object or None if the object is None.
     """
     if obj is None:
         return None
 
-    if obj_serializer is None:
-        obj_serializer = obj_dump_serializer
+    if obj_serializer is not None:
+        warnings.warn(
+            "The 'obj_serializer' parameter is deprecated and will be "
+            "removed in a future version.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
     if isinstance(obj, list):
         serialized = [obj_to_dict(item) for item in obj]

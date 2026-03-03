@@ -55,6 +55,11 @@ class TestSerializeToDict:
     def test_none_returns_none(self):
         assert serialize_to_dict(None) is None
 
+    def test_obj_serializer_param_emits_deprecation_warning(self):
+        """Copilot review: obj_serializer is deprecated and should warn."""
+        with pytest.warns(DeprecationWarning, match="obj_serializer"):
+            serialize_to_dict({"key": "value"}, obj_serializer=lambda x: x)
+
     def test_list_of_pydantic_models(self):
         class Item(BaseModel):
             name: str
