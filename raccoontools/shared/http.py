@@ -42,7 +42,7 @@ def get_headers(
 
     headers = {
         **_get_header_user_agent(user_agent, fake_browser_user_agent),
-        **_get_header_value("Authorization", f"Bearer {token}"),
+        **(_get_header_value("Authorization", f"Bearer {token}") if token else {}),
         **_get_header_value("Content-Type", content_type),
         **extra_args
     }

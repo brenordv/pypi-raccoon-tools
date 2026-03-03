@@ -95,10 +95,11 @@ def post(url, data=None, json=None, **kwargs) -> requests.Response:
     :param json: (optional) A JSON serializable Python object (not necessarily a dict or List[dict]) to send in the body of the :class:`Request`.
     :param send_json_as_is: (optional) If true, will skip the serialization of the data to dictionary.
     :param kwargs: Optional arguments that ``request`` takes.
-    :return: :class:`Response <Response>` object
+    :return: :class: `Response <Response>` object
     :rtype: requests.Response
     """
-    payload = json if kwargs.get("send_json_as_is", False) else serialize_to_dict(json)
+    send_as_is = kwargs.pop("send_json_as_is", False)
+    payload = json if send_as_is else serialize_to_dict(json)
 
     return requests.post(url, data=data, json=payload, **kwargs)
 
@@ -117,7 +118,8 @@ def put(url, data=None, **kwargs) -> requests.Response:
     :rtype: requests.Response
     """
 
-    if "json" in kwargs and not kwargs.get("send_json_as_is", False):
+    send_as_is = kwargs.pop("send_json_as_is", False)
+    if "json" in kwargs and not send_as_is:
         kwargs["json"] = serialize_to_dict(kwargs["json"])
 
     return requests.put(url, data=data, **kwargs)
@@ -137,7 +139,8 @@ def patch(url, data=None, **kwargs) -> requests.Response:
     :rtype: requests.Response
     """
 
-    if "json" in kwargs and not kwargs.get("send_json_as_is", False):
+    send_as_is = kwargs.pop("send_json_as_is", False)
+    if "json" in kwargs and not send_as_is:
         kwargs["json"] = serialize_to_dict(kwargs["json"])
 
     return requests.patch(url, data=data, **kwargs)

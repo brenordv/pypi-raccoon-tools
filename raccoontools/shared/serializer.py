@@ -18,8 +18,8 @@ def obj_to_dict(obj) -> dict:
     """
 
     if issubclass(type(obj), BaseModel):
-        # If it's a BaseModel, convert it to a dict using that fancy helper.
-        obj = obj.dict()
+        # If it's a BaseModel, convert it to a dict using model_dump (Pydantic v2).
+        obj = obj.model_dump()
 
     elif hasattr(obj, '__dict__'):
         # If it's an object, convert it to a dict using the __dict__ attribute.
