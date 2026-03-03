@@ -55,11 +55,11 @@ def retry(
                     if (only_exceptions_of_type and
                             not any(isinstance(e, exception_type) for exception_type in only_exceptions_of_type)):
                         logger.debug(f"Not allowed to retry on exception type {type(e)}.")
-                        raise e
+                        raise
 
                     if i >= retries:
                         logger.error(f"Failed execution of {inner_func.__name__} after {retries} attempts.")
-                        break
+                        raise
 
                     logger.debug(f"Retrying {inner_func.__name__} in {current_delay} seconds. Last error: {repr(e)}")
 

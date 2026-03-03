@@ -1,5 +1,12 @@
 from datetime import datetime
-from typing import Tuple
+
+try:
+    from datetime import UTC
+except ImportError:
+    from datetime import timezone
+
+    UTC = timezone.utc
+from typing import Union
 from uuid import uuid4
 
 
@@ -8,7 +15,7 @@ def get_filename_for_new_file(
         prefix: str = None,
         add_current_datetime_as_format: str = "%Y%m%d%H%M%S%f",
         use_utc: bool = True,
-        unique_identifier: Tuple[str, bool] = True,
+        unique_identifier: Union[str, bool] = True,
         part_separator: str = "-",
         suffix: str = None
 ) -> str:
@@ -34,7 +41,7 @@ def get_filename_for_new_file(
         filename_parts.append(prefix)
 
     if add_current_datetime_as_format:
-        now = datetime.utcnow() if use_utc else datetime.now()
+        now = datetime.now(tz=UTC) if use_utc else datetime.now()
         current_datetime = now.strftime(add_current_datetime_as_format)
         filename_parts.append(current_datetime)
 

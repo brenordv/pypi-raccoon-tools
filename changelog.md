@@ -1,4 +1,27 @@
 # Changelog
+## [1.3.0]
+### General
+- Updated dependency versions.
+- Replaced `utcnow()` with `now(tz=UTC)`.
+- Added `datetime.UTC` compatibility shim for Python 3.9/3.10 (where `UTC` is not available).
+- Removed stale `setup.py`; `pyproject.toml` is now the single source of truth.
+- Updated CI pipeline to run tests across Python 3.9–3.14 before publishing.
+- Bumped GitHub Actions (`actions/checkout` v4, `actions/setup-python` v5).
+
+### Bug fixes
+- `retry`: Fixed decorator silently swallowing the last exception and returning `None` instead of re-raising.
+- `retry_request`: Fixed `send_json_as_is` kwarg leaking into `requests.post`/`put`/`patch`, causing `TypeError`.
+- `sentence_generator`: Fixed `ValueError` crash when `min_length` exceeded the random upper bound.
+- `obj_to_dict`: Replaced deprecated Pydantic v1 `.dict()` with `.model_dump()`.
+- `get_headers`: Fixed `Authorization: Bearer None` being emitted when token is `None` or empty.
+- `get_filename_for_new_file`: Fixed incorrect type hint (`Tuple[str, bool]` → `Union[str, bool]`).
+- `serialize_to_dict`: Fixed primitive dict values (`int`, `float`, `bool`) being silently converted to strings.
+- `csv_string_to_dict_list`: Fixed `dict` and `List[dict]` inputs causing character explosion; dicts are now passed through as-is.
+
+### Added
+- `load_json_from_file`: Added optional `object_hook` parameter to control JSON deserialization. Pass `None` to disable automatic type coercion (numeric strings, dates).
+- Comprehensive test suite covering all modules.
+
 ## [1.2.1]
 ### General
 - Updated dependency versions.

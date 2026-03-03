@@ -123,10 +123,12 @@ def sentence_generator(sentences_to_generate: Optional[int] = None,
 
     while sentences_to_generate is None or sentences_generated < sentences_to_generate:
         # Determine the length of this sentence
+        lower = max(min_length, 1)
         if max_length is None:
-            sentence_length = random.randint(max(min_length, 1), random.randint(10, 512))
+            upper = max(lower, random.randint(10, 512))
         else:
-            sentence_length = random.randint(max(min_length, 1), max(max_length, min_length))
+            upper = max(lower, max_length)
+        sentence_length = random.randint(lower, upper)
 
         # Generate the sentence
         sentence = []
@@ -178,10 +180,10 @@ if __name__ == '__main__':
 
     print("Sentence Generator:")
     print("Default settings:")
-    for sentence in sentence_generator(5):
-        print(f"- {sentence}")
+    for generated_sentence in sentence_generator(5):
+        print(f"- {generated_sentence}")
 
     print("\nCustom settings:")
     custom_gen = sentence_generator(3, min_length=50, max_length=100)
-    for sentence in custom_gen:
-        print(f"- {sentence}")
+    for generated_sentence in custom_gen:
+        print(f"- {generated_sentence}")

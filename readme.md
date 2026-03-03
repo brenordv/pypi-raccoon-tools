@@ -198,7 +198,7 @@ for sentence in sentence_generator(2, min_length=40, max_length=80):
 ### `file_ops`
 Provides functions to load and save JSON data to and from files.
 
-- `load_json_from_file(file: Path, encoding: str = "utf-8") -> Union[dict, List[dict]]`: Loads a JSON file and returns the data as a dictionary or list of dictionaries.
+- `load_json_from_file(file: Path, encoding: str = "utf-8", object_hook: Optional[Callable] = obj_dump_deserializer) -> Union[dict, List[dict]]`: Loads a JSON file and returns the data as a dictionary or list of dictionaries. By default, uses `obj_dump_deserializer` to reconstruct types (datetime, int, float, Path). Pass `object_hook=None` for raw JSON parsing with no type coercion.
 - `save_json_to_file(data: Union[dict, List[dict]], target_file_or_folder: Path, dump_kwargs: dict = None, encoding: str = "utf-8") -> Path`: Saves a dictionary or list of dictionaries to a JSON file.
 
 **Example:**
@@ -217,7 +217,7 @@ print(saved_file, loaded_payload)
 ### `file_utils`
 Provides utility functions for file operations.
 
-- `get_filename_for_new_file(file_extension: str, prefix: str = None, add_current_datetime_as_format: str = "%Y%m%d%H%M%S%f", use_utc: bool = True, unique_identifier: Tuple[str, bool] = True, part_separator: str = "-", suffix: str = None) -> str`: Generates a unique filename for a new file.
+- `get_filename_for_new_file(file_extension: str, prefix: str = None, add_current_datetime_as_format: str = "%Y%m%d%H%M%S%f", use_utc: bool = True, unique_identifier: Union[str, bool] = True, part_separator: str = "-", suffix: str = None) -> str`: Generates a unique filename for a new file.
 
 **Example:**
 ```python

@@ -1,3 +1,4 @@
+import warnings
 from datetime import datetime
 from io import StringIO
 from pathlib import Path
@@ -18,8 +19,8 @@ def obj_to_dict(obj) -> dict:
     """
 
     if issubclass(type(obj), BaseModel):
-        # If it's a BaseModel, convert it to a dict using that fancy helper.
-        obj = obj.dict()
+        # If it's a BaseModel, convert it to a dict using model_dump (Pydantic v2).
+        obj = obj.model_dump()
 
     elif hasattr(obj, '__dict__'):
         # If it's an object, convert it to a dict using the __dict__ attribute.
@@ -39,14 +40,19 @@ def serialize_to_dict(obj, obj_serializer: callable = None) -> Union[dict, List[
     Remarks: This scans the object recursively.
 
     :param obj: The object to be serialized
-    :param obj_serializer: A custom serializer function to be used when serializing the object. (Default: obj_dump_serializer)
+    :param obj_serializer: Deprecated. This parameter is no longer used and will be removed in a future version.
     :return: The serialized JSON object or None if the object is None.
     """
     if obj is None:
         return None
 
-    if obj_serializer is None:
-        obj_serializer = obj_dump_serializer
+    if obj_serializer is not None:
+        warnings.warn(
+            "The 'obj_serializer' parameter is deprecated and will be "
+            "removed in a future version.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
     if isinstance(obj, list):
         serialized = [obj_to_dict(item) for item in obj]
@@ -54,7 +60,7 @@ def serialize_to_dict(obj, obj_serializer: callable = None) -> Union[dict, List[
         serialized = {}
         for key, value in obj.items():
             if isinstance(value, (str, int, float, bool)):
-                serialized[key] = obj_serializer(value)
+                serialized[key] = value
             else:
                 serialized[key] = serialize_to_dict(value)
     else:
@@ -88,9 +94,14 @@ def csv_string_to_dict_list(
     """
     if isinstance(data, str):
         return parse_csv(data)
+    elif isinstance(data, dict):
+        return [data]
     elif isinstance(data, list):
         result = []
-        [result.extend(csv_string_to_dict_list(d)) for d in data]
+        for d in data:
+            parsed = csv_string_to_dict_list(d, no_data_return=no_data_return)
+            if isinstance(parsed, list):
+                result.extend(parsed)
         return result
 
     return no_data_return

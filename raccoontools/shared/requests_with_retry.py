@@ -98,7 +98,8 @@ def post(url, data=None, json=None, **kwargs) -> requests.Response:
     :return: :class:`Response <Response>` object
     :rtype: requests.Response
     """
-    payload = json if kwargs.get("send_json_as_is", False) else serialize_to_dict(json)
+    send_as_is = kwargs.pop("send_json_as_is", False)
+    payload = json if send_as_is else serialize_to_dict(json)
 
     return requests.post(url, data=data, json=payload, **kwargs)
 
@@ -117,7 +118,8 @@ def put(url, data=None, **kwargs) -> requests.Response:
     :rtype: requests.Response
     """
 
-    if "json" in kwargs and not kwargs.get("send_json_as_is", False):
+    send_as_is = kwargs.pop("send_json_as_is", False)
+    if "json" in kwargs and not send_as_is:
         kwargs["json"] = serialize_to_dict(kwargs["json"])
 
     return requests.put(url, data=data, **kwargs)
@@ -137,7 +139,8 @@ def patch(url, data=None, **kwargs) -> requests.Response:
     :rtype: requests.Response
     """
 
-    if "json" in kwargs and not kwargs.get("send_json_as_is", False):
+    send_as_is = kwargs.pop("send_json_as_is", False)
+    if "json" in kwargs and not send_as_is:
         kwargs["json"] = serialize_to_dict(kwargs["json"])
 
     return requests.patch(url, data=data, **kwargs)

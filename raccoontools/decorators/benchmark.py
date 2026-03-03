@@ -2,6 +2,13 @@ import logging
 from functools import wraps
 from typing import Callable, Any, Union
 from datetime import datetime, timedelta
+
+try:
+    from datetime import UTC
+except ImportError:
+    from datetime import timezone
+
+    UTC = timezone.utc
 from timeit import default_timer as timer
 from typing_extensions import TypedDict
 
@@ -40,12 +47,12 @@ def benchmark(func: Callable) -> Callable:
         nonlocal end_timer
         nonlocal elapsed_time
 
-        started_at = datetime.utcnow()
+        started_at = datetime.now(tz=UTC)
         start_timer = timer()
 
         result: Any = func(*args, **kwargs)
 
-        stopped_at = datetime.utcnow()
+        stopped_at = datetime.now(tz=UTC)
         end_timer = timer()
 
         elapsed_time = timedelta(seconds=end_timer - start_timer)
