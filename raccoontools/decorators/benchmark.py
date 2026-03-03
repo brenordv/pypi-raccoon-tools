@@ -1,7 +1,14 @@
 import logging
 from functools import wraps
 from typing import Callable, Any, Union
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta
+
+try:
+    from datetime import UTC
+except ImportError:
+    from datetime import timezone
+
+    UTC = timezone.utc
 from timeit import default_timer as timer
 from typing_extensions import TypedDict
 

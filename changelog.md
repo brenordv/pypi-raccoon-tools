@@ -3,6 +3,7 @@
 ### General
 - Updated dependency versions.
 - Replaced `utcnow()` with `now(tz=UTC)`.
+- Added `datetime.UTC` compatibility shim for Python 3.9/3.10 (where `UTC` is not available).
 - Removed stale `setup.py`; `pyproject.toml` is now the single source of truth.
 - Updated CI pipeline to run tests across Python 3.9–3.14 before publishing.
 - Bumped GitHub Actions (`actions/checkout` v4, `actions/setup-python` v5).

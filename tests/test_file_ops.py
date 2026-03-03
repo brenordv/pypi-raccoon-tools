@@ -1,6 +1,10 @@
 import json
-from datetime import datetime, UTC
-from pathlib import Path
+try:
+    from datetime import UTC
+except ImportError:
+    from datetime import timezone
+
+    UTC = timezone.utc
 
 import pytest
 
