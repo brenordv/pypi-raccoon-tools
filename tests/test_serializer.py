@@ -214,6 +214,33 @@ class TestCsvStringToDictList:
         result = csv_string_to_dict_list(42, no_data_return="N/A")
         assert result == "N/A"
 
+    def test_dict_input_returns_list_with_dict(self):
+        """Bug 8 regression: dict input should be wrapped in a list."""
+        data = {"name": "Alice", "age": 30}
+        result = csv_string_to_dict_list(data)
+        assert result == [{"name": "Alice", "age": 30}]
+
+    def test_list_of_dicts_returns_dicts(self):
+        """Bug 8 regression: list of dicts should pass through, not explode."""
+        data = [{"name": "Alice"}, {"name": "Bob"}]
+        result = csv_string_to_dict_list(data)
+        assert result == [{"name": "Alice"}, {"name": "Bob"}]
+
+    def test_mixed_list_of_strings_and_dicts(self):
+        """Bug 8 regression: mixed list of CSV strings and dicts."""
+        data = ["name,age\nAlice,30", {"name": "Bob", "age": "25"}]
+        result = csv_string_to_dict_list(data)
+        assert len(result) == 2
+        assert result[0]["name"] == "Alice"
+        assert result[1]["name"] == "Bob"
+
+    def test_list_with_unsupported_type_skips_it(self):
+        """Non-string/non-dict items in a list should be silently skipped."""
+        data = ["name,age\nAlice,30", 42]
+        result = csv_string_to_dict_list(data)
+        assert len(result) == 1
+        assert result[0]["name"] == "Alice"
+
 
 # ---------------------------------------------------------------------------
 # dataset_to_prompt_text

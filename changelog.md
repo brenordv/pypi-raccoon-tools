@@ -15,6 +15,7 @@
 - `get_headers`: Fixed `Authorization: Bearer None` being emitted when token is `None` or empty.
 - `get_filename_for_new_file`: Fixed incorrect type hint (`Tuple[str, bool]` → `Union[str, bool]`).
 - `serialize_to_dict`: Fixed primitive dict values (`int`, `float`, `bool`) being silently converted to strings.
+- `csv_string_to_dict_list`: Fixed `dict` and `List[dict]` inputs causing character explosion; dicts are now passed through as-is.
 
 ### Added
 - Comprehensive test suite covering all modules.

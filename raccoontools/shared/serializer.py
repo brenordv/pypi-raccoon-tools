@@ -88,9 +88,14 @@ def csv_string_to_dict_list(
     """
     if isinstance(data, str):
         return parse_csv(data)
+    elif isinstance(data, dict):
+        return [data]
     elif isinstance(data, list):
         result = []
-        [result.extend(csv_string_to_dict_list(d)) for d in data]
+        for d in data:
+            parsed = csv_string_to_dict_list(d)
+            if isinstance(parsed, list):
+                result.extend(parsed)
         return result
 
     return no_data_return
