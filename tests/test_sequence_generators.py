@@ -1,8 +1,5 @@
 import time
 import uuid
-from unittest.mock import patch
-
-import pytest
 
 from raccoontools.generators.sequence_generators import (
     id_guid_generator,

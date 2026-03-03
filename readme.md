@@ -198,7 +198,7 @@ for sentence in sentence_generator(2, min_length=40, max_length=80):
 ### `file_ops`
 Provides functions to load and save JSON data to and from files.
 
-- `load_json_from_file(file: Path, encoding: str = "utf-8", object_hook: Optional[Callable] = <default>) -> Union[dict, List[dict]]`: Loads a JSON file and returns the data as a dictionary or list of dictionaries. By default, uses `obj_dump_deserializer` to reconstruct types (datetime, int, float, Path). Pass `object_hook=None` for raw JSON parsing with no type coercion.
+- `load_json_from_file(file: Path, encoding: str = "utf-8", object_hook: Optional[Callable] = obj_dump_deserializer) -> Union[dict, List[dict]]`: Loads a JSON file and returns the data as a dictionary or list of dictionaries. By default, uses `obj_dump_deserializer` to reconstruct types (datetime, int, float, Path). Pass `object_hook=None` for raw JSON parsing with no type coercion.
 - `save_json_to_file(data: Union[dict, List[dict]], target_file_or_folder: Path, dump_kwargs: dict = None, encoding: str = "utf-8") -> Path`: Saves a dictionary or list of dictionaries to a JSON file.
 
 **Example:**
