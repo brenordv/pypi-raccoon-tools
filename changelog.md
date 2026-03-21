@@ -1,4 +1,9 @@
 # Changelog
+## [1.3.1]
+### Bug fixes
+- `obj_to_dict`: Fixed `dict` inputs not being recognized as valid — dicts are now returned as-is instead of raising `ValueError`.
+- `obj_to_dict`: Added specific error message when `list` or `tuple` is passed (previously raised a generic error).
+
 ## [1.3.0]
 ### General
 - Updated dependency versions.

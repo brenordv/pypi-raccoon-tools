@@ -46,6 +46,28 @@ class TestObjToDict:
         result = obj_to_dict(Simple())
         assert result == {"x": 1, "y": 2}
 
+    def test_dict_passthrough(self):
+        """Bug fix 1.3.1 regression: dicts should be returned as-is."""
+        d = {"key": "value", "num": 42}
+        result = obj_to_dict(d)
+        assert result is d
+
+    def test_empty_dict_passthrough(self):
+        """Bug fix 1.3.1 regression: empty dicts should be returned as-is."""
+        d = {}
+        result = obj_to_dict(d)
+        assert result is d
+
+    def test_raises_on_list(self):
+        """Bug fix 1.3.1 regression: lists should raise with specific message."""
+        with pytest.raises(ValueError, match="Lists and tuples are not supported"):
+            obj_to_dict([1, 2, 3])
+
+    def test_raises_on_tuple(self):
+        """Bug fix 1.3.1 regression: tuples should raise with specific message."""
+        with pytest.raises(ValueError, match="Lists and tuples are not supported"):
+            obj_to_dict((1, 2, 3))
+
     def test_raises_on_primitive(self):
         with pytest.raises(ValueError, match="Could not convert"):
             obj_to_dict(42)

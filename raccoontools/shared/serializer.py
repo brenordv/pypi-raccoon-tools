@@ -17,20 +17,22 @@ def obj_to_dict(obj) -> dict:
     :return: Dict representation of the object.
     :raises ValueError: If the object can't be converted to a dict.
     """
+    if isinstance(obj, dict):
+        return obj
 
     if issubclass(type(obj), BaseModel):
         # If it's a BaseModel, convert it to a dict using model_dump (Pydantic v2).
-        obj = obj.model_dump()
+        return obj.model_dump()
 
-    elif hasattr(obj, '__dict__'):
+    if hasattr(obj, '__dict__'):
         # If it's an object, convert it to a dict using the __dict__ attribute.
-        obj = obj.__dict__
-    else:
-        # Else: No idea how to convert it to a dict, so just return it as is.
-        raise ValueError(f"Could not convert object of type {type(obj)} to a dict.")
+        return obj.__dict__
 
-    # Return the (hopefully) converted object.
-    return obj
+    if isinstance(obj, (list, tuple)):
+        raise ValueError(f"Could not convert object of type {type(obj)} to a dict. Lists and tuples are not supported.")
+
+    # Else: No idea how to convert it to a dict.
+    raise ValueError(f"Could not convert object of type {type(obj)} to a dict.")
 
 
 def serialize_to_dict(obj, obj_serializer: callable = None) -> Union[dict, List[dict], None]:
