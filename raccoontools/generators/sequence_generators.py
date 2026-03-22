@@ -82,14 +82,14 @@ def timestamp_generator(timestamps_to_generate: Optional[int] = None) -> Generat
 
 
 def sentence_generator(sentences_to_generate: Optional[int] = None,
-                       min_length: int = 1,
+                       min_length: int = 2,
                        max_length: Optional[int] = None) -> Generator[str, None, None]:
     """
     Generate Lorem Ipsum sentences with lengths ranging from min_length to max_length.
 
     Args:
         sentences_to_generate (Optional[int]): The number of sentences to generate. If None, generates indefinitely.
-        min_length (int): The minimum length of each sentence. Default is 1.
+        min_length (int): The minimum length of each sentence. Default is 2.
         max_length (Optional[int]): The maximum length of each sentence.
                                     If None, a random value between 10 and 512 is used for each sentence.
 
@@ -123,7 +123,7 @@ def sentence_generator(sentences_to_generate: Optional[int] = None,
 
     while sentences_to_generate is None or sentences_generated < sentences_to_generate:
         # Determine the length of this sentence
-        lower = max(min_length, 1)
+        lower = max(min_length, 2)
         if max_length is None:
             upper = max(lower, random.randint(10, 512))
         else:
