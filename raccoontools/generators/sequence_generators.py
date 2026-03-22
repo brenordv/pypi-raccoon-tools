@@ -123,7 +123,7 @@ def sentence_generator(sentences_to_generate: Optional[int] = None,
 
     while sentences_to_generate is None or sentences_generated < sentences_to_generate:
         # Determine the length of this sentence
-        lower = max(min_length, 1)
+        lower = max(min_length, 2)
         if max_length is None:
             upper = max(lower, random.randint(10, 512))
         else:
