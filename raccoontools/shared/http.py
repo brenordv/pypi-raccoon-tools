@@ -3,7 +3,7 @@
 DEFAULT_FAKE_BROWSER_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0"
 
 
-def _get_header_user_agent(user_agent: str = None, fake_browser_user_agent: bool = False) -> dict[str, str]:
+def _get_header_user_agent(user_agent: str | None = None, fake_browser_user_agent: bool = False) -> dict[str, str]:
     if not user_agent and not fake_browser_user_agent:
         return {}
 

@@ -1,7 +1,7 @@
 # Changelog
 ## [2.0.0]
 ### Breaking changes
-- Dropped Python 3.9 support. Minimum required version is now Python 3.10.
+- Dropped Python 3.9 support. The minimum required version is now Python 3.10.
 
 ### General
 - Modernized type hints across the codebase: replaced `Union`, `Optional`, `List`, `Dict`, `Tuple`, and `Type` from `typing` with PEP 604 (`X | Y`) and PEP 585 (`list`, `dict`, `tuple`, `type`) syntax.
