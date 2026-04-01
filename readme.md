@@ -198,8 +198,8 @@ for sentence in sentence_generator(2, min_length=40, max_length=80):
 ### `file_ops`
 Provides functions to load and save JSON data to and from files.
 
-- `load_json_from_file(file: Path, encoding: str = "utf-8", object_hook: Optional[Callable] = obj_dump_deserializer) -> Union[dict, List[dict]]`: Loads a JSON file and returns the data as a dictionary or list of dictionaries. By default, uses `obj_dump_deserializer` to reconstruct types (datetime, int, float, Path). Pass `object_hook=None` for raw JSON parsing with no type coercion.
-- `save_json_to_file(data: Union[dict, List[dict]], target_file_or_folder: Path, dump_kwargs: dict = None, encoding: str = "utf-8") -> Path`: Saves a dictionary or list of dictionaries to a JSON file.
+- `load_json_from_file(file: Path, encoding: str = "utf-8", object_hook: Callable | None = obj_dump_deserializer) -> dict | list[dict]`: Loads a JSON file and returns the data as a dictionary or list of dictionaries. By default, uses `obj_dump_deserializer` to reconstruct types (datetime, int, float, Path). Pass `object_hook=None` for raw JSON parsing with no type coercion.
+- `save_json_to_file(data: dict | list[dict], target_file_or_folder: Path, dump_kwargs: dict | None = None, encoding: str = "utf-8") -> Path`: Saves a dictionary or list of dictionaries to a JSON file.
 
 **Example:**
 ```python
@@ -217,20 +217,25 @@ print(saved_file, loaded_payload)
 ### `file_utils`
 Provides utility functions for file operations.
 
-- `get_filename_for_new_file(file_extension: str, prefix: str = None, add_current_datetime_as_format: str = "%Y%m%d%H%M%S%f", use_utc: bool = True, unique_identifier: Union[str, bool] = True, part_separator: str = "-", suffix: str = None) -> str`: Generates a unique filename for a new file.
+- `get_filename_for_new_file(file_extension: str, prefix: str | None = None, add_current_datetime_as_format: str = "%Y%m%d%H%M%S%f", use_utc: bool = True, unique_identifier: str | bool = True, part_separator: str = "-", suffix: str | None = None) -> str`: Generates a unique filename for a new file.
+- `get_date_based_subfolder(ref_path: Path, use_utc: bool = True, date_ref: datetime | None = None, add_delta_days: int | None = None, date_format: str = "%Y-%m-%d", create_if_missing: bool = True) -> Path`: Gets (or creates) a date-based subfolder under the given path. If `ref_path` points to a file (or has a file extension), uses its parent directory as the base.
 
 **Example:**
 ```python
-from raccoontools.shared.file_utils import get_filename_for_new_file
+from pathlib import Path
+from raccoontools.shared.file_utils import get_filename_for_new_file, get_date_based_subfolder
 
 filename = get_filename_for_new_file("json", prefix="snapshot", suffix="v1")
 print(filename)  # snapshot-20240201130501999999-...-v1.json
+
+folder = get_date_based_subfolder(Path("output/data"), add_delta_days=-1)
+print(folder)  # output/data/2025-03-31
 ```
 
 ### `http`
 Provides utility functions for HTTP headers.
 
-- `get_headers(token: str, content_type: str = "application/json", user_agent: str = None, fake_browser_user_agent: bool = False, extra_args: Dict[str, str] = None) -> Dict[str, str]`: Generates headers for an HTTP request.
+- `get_headers(token: str | None = None, content_type: str = "application/json", user_agent: str | None = None, fake_browser_user_agent: bool = False, extra_args: dict[str, str] | None = None) -> dict[str, str]`: Generates headers for an HTTP request.
 
 **Example:**
 ```python
@@ -266,10 +271,10 @@ print(response.status_code)
 ### `serializer`
 Provides functions to serialize and deserialize objects.
 
-- `serialize_to_dict(obj) -> Union[dict, List[dict], None]`: Serializes an object to a dictionary or list of dictionaries.
-- `parse_csv(csv_data: str) -> List[dict]`: Parses a CSV string and returns a list of dictionaries.
-- `csv_string_to_dict_list(data: Union[str, List[str], dict, List[dict]], no_data_return: str = "No data available") -> Union[List[dict], str]`: Converts a CSV string to a list of dictionaries.
-- `dataset_to_prompt_text(dataset: List[dict]) -> str`: Converts a dataset to a prompt text.
+- `serialize_to_dict(obj) -> dict | list[dict] | None`: Serializes an object to a dictionary or list of dictionaries.
+- `parse_csv(csv_data: str) -> list[dict]`: Parses a CSV string and returns a list of dictionaries.
+- `csv_string_to_dict_list(data: str | list[str] | dict | list[dict], no_data_return: str = "No data available") -> list[dict] | str`: Converts a CSV string to a list of dictionaries.
+- `dataset_to_prompt_text(dataset: list[dict]) -> str`: Converts a dataset to a prompt text.
 - `obj_dump_serializer(obj)`: Serializes objects for saving data to a file.
 - `obj_dump_deserializer(obj)`: Deserializes objects when loading data from a file.
 
