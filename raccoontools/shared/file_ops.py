@@ -1,6 +1,6 @@
 import json
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable, Optional, Union, List
 
 from raccoontools.shared.file_utils import get_filename_for_new_file
 from raccoontools.shared.serializer import obj_dump_deserializer, obj_dump_serializer
@@ -17,8 +17,8 @@ _JSON_DUMPS_PARAMS = {
 def load_json_from_file(
         file: Path,
         encoding: str = "utf-8",
-        object_hook: Optional[Callable] = _USE_DEFAULT_HOOK,
-) -> Union[dict, List[dict]]:
+        object_hook: Callable | None = _USE_DEFAULT_HOOK,
+) -> dict | list[dict]:
     """
     Loads a JSON file and returns the data as dict or List[dict].
 
@@ -44,9 +44,9 @@ def load_json_from_file(
 
 
 def save_json_to_file(
-        data: Union[dict, List[dict]],
+        data: dict | list[dict],
         target_file_or_folder: Path,
-        dump_kwargs: dict = None,
+        dump_kwargs: dict | None = None,
         encoding: str = "utf-8"
 ) -> Path:
     """

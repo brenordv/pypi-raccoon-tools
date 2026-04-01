@@ -1,10 +1,11 @@
+import csv
 import warnings
+from collections.abc import Callable
 from datetime import datetime
 from io import StringIO
 from pathlib import Path
-from typing import Union, List
+
 from pydantic import BaseModel
-import csv
 
 
 _PATH_LIB_OBJ_TAG = "[PATHLIBOBJ]"
@@ -35,7 +36,7 @@ def obj_to_dict(obj) -> dict:
     raise ValueError(f"Could not convert object of type {type(obj)} to a dict.")
 
 
-def serialize_to_dict(obj, obj_serializer: callable = None) -> Union[dict, List[dict], None]:
+def serialize_to_dict(obj, obj_serializer: Callable | None = None) -> dict | list[dict] | None:
     """
     Serialize obj to a dict or a list of dicts. Useful when sending complex objects in http requests.
     If the obj passed is a dict, will iterate over all the properties and convert them to dicts.
@@ -71,7 +72,7 @@ def serialize_to_dict(obj, obj_serializer: callable = None) -> Union[dict, List[
     return serialized
 
 
-def parse_csv(csv_data: str) -> List[dict]:
+def parse_csv(csv_data: str) -> list[dict]:
     """
     Parses a CSV string and returns a list of dictionaries.
 
@@ -84,9 +85,9 @@ def parse_csv(csv_data: str) -> List[dict]:
 
 
 def csv_string_to_dict_list(
-        data: Union[str, List[str], dict, List[dict]],
+        data: str | list[str] | dict | list[dict],
         no_data_return: str = "No data available"
-) -> Union[List[dict], str]:
+) -> list[dict] | str:
     """
     Converts a CSV string to a list of dictionaries.
     The first row is considered the header row.
@@ -109,7 +110,7 @@ def csv_string_to_dict_list(
     return no_data_return
 
 
-def dataset_to_prompt_text(dataset: List[dict]) -> str:
+def dataset_to_prompt_text(dataset: list[dict]) -> str:
     """
     Converts a dataset to a prompt text.
     TODO: Explain a bit better what does this function do, and how to use it.

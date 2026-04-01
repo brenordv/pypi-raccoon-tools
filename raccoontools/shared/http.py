@@ -1,10 +1,9 @@
-from typing import Dict, Optional
 
 # Now, why would you want to do something like this?
 DEFAULT_FAKE_BROWSER_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0"
 
 
-def _get_header_user_agent(user_agent: str = None, fake_browser_user_agent: bool = False) -> Dict[str, str]:
+def _get_header_user_agent(user_agent: str | None = None, fake_browser_user_agent: bool = False) -> dict[str, str]:
     if not user_agent and not fake_browser_user_agent:
         return {}
 
@@ -13,7 +12,7 @@ def _get_header_user_agent(user_agent: str = None, fake_browser_user_agent: bool
     }
 
 
-def _get_header_value(key: str, value: str) -> Dict[str, str]:
+def _get_header_value(key: str, value: str) -> dict[str, str]:
     if not value:
         return {}
 
@@ -23,11 +22,11 @@ def _get_header_value(key: str, value: str) -> Dict[str, str]:
 
 
 def get_headers(
-        token: Optional[str] = None,
+        token: str | None = None,
         content_type: str = "application/json",
-        user_agent: str = None,
+        user_agent: str | None = None,
         fake_browser_user_agent: bool = False,
-        extra_args: Dict[str, str] = None) -> Dict[str, str]:
+        extra_args: dict[str, str] | None = None) -> dict[str, str]:
     """
     Get the headers for an HTTP request.
     :param token: Authentication token. If None or empty, no Authorization header is set.

@@ -1,6 +1,6 @@
 import csv
+from collections.abc import Generator
 from pathlib import Path
-from typing import Union, Generator, Optional, List, Tuple
 
 
 class CsvRowMetadata:
@@ -21,10 +21,10 @@ class CsvRowMetadata:
     raw_data: str
 
     """List of headers if present."""
-    headers: Optional[List[str]] = None
+    headers: list[str] | None = None
 
     def __init__(self, index: int = 0, data_line_number: int = 0, absolute_line_number: int = 0,
-                 raw_data: str = "", headers: Optional[List[str]] = None):
+                 raw_data: str = "", headers: list[str] | None = None):
         self.index = index
         self.data_line_number = data_line_number
         self.absolute_line_number = absolute_line_number
@@ -32,16 +32,16 @@ class CsvRowMetadata:
         self.headers = headers
 
 
-def read_line(file: Union[str, Path], strip_line: bool = True, encoding: str = "utf-8",
-              buffer_size: Optional[int] = None) -> Generator[str, None, None]:
+def read_line(file: str | Path, strip_line: bool = True, encoding: str = "utf-8",
+              buffer_size: int | None = None) -> Generator[str, None, None]:
     """
     Read a file line by line.
 
     Args:
-        file (Union[str, Path]): Path to the file.
+        file (str | Path): Path to the file.
         strip_line (bool): Strip whitespace from the beginning and end of each line. Defaults to True.
         encoding (str): File encoding. Defaults to 'utf-8'.
-        buffer_size (Optional[int]): Size of the read buffer in bytes. If None, the default system buffer is used.
+        buffer_size (int | None): Size of the read buffer in bytes. If None, the default system buffer is used.
 
     Yields:
         str: Each line from the file, stripped if strip_line is True.
@@ -76,16 +76,16 @@ def read_line(file: Union[str, Path], strip_line: bool = True, encoding: str = "
         raise IOError(f"Error reading file {file}: {str(e)}")
 
 
-def read_csv(file: Union[str, Path], encoding: str = "utf-8", has_headers: bool = True,
-              buffer_size: Optional[int] = None) -> Generator[Tuple[Union[dict, list], CsvRowMetadata], None, None]:
+def read_csv(file: str | Path, encoding: str = "utf-8", has_headers: bool = True,
+              buffer_size: int | None = None) -> Generator[tuple[dict | list, CsvRowMetadata], None, None]:
     """
     Read a csv file row by row.
 
     Args:
-        file (Union[str, Path]): Path to the file.
+        file (str | Path): Path to the file.
         encoding (str): File encoding. Defaults to 'utf-8'.
         has_headers (bool): If true, will assume the first line of the file is the header row. Defaults to True.
-        buffer_size (Optional[int]): Size of the read buffer in bytes. If None, the default system buffer is used.
+        buffer_size (int | None): Size of the read buffer in bytes. If None, the default system buffer is used.
 
     Yields:
         (dict, CsvRowMetadata): Each line yielded as a dictionary with headers as keys and data as values or a list
@@ -105,7 +105,7 @@ def read_csv(file: Union[str, Path], encoding: str = "utf-8", has_headers: bool 
         might not need that even with large files. If you're dealing with large files, play around with those values
         to see if it has any impact on performance.
     """
-    headers: Optional[List[str]] = None
+    headers: list[str] | None = None
     data_line_number = 0
 
     for row_index, raw_line in enumerate(
@@ -147,13 +147,9 @@ def read_csv(file: Union[str, Path], encoding: str = "utf-8", has_headers: bool 
         metadata = CsvRowMetadata(
             index=row_index,
             data_line_number=data_line_number,
-            absolute_line_number=row_index + 1,
+            absolute_line_number=row_index,
             raw_data=line_without_newline,
             headers=metadata_headers
         )
 
         yield row_data, metadata
-
-if __name__ == '__main__':
-    for row, mtd in read_csv("Z:\dev\projects\python\movie-recommendation\data\historical_data\letterboxd\watched.csv"):
-        print(row)

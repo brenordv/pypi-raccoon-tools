@@ -1,7 +1,8 @@
-from typing import List, Any, Generator
+from collections.abc import Generator
+from typing import Any
 
 
-def infinite_iterator(list_to_iterate_over: List[Any]) -> Generator[Any, None, None]:
+def infinite_iterator(list_to_iterate_over: list[Any]) -> Generator[Any, None, None]:
     """
     Generate an infinite iterator from a list.
     """

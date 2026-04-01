@@ -1,7 +1,9 @@
 import logging
+from collections.abc import Callable
 from functools import wraps
 from time import sleep
-from typing import Callable, Any, List, Type, Optional, Union
+from typing import Any
+
 import requests
 
 from simple_log_factory.log_factory import log_factory
@@ -10,14 +12,14 @@ __logger_name = "RN.T:Retry"  # Racoon Ninja Tools: Retry Decorator
 
 
 def retry(
-        func: Optional[Callable] = None,
+        func: Callable | None = None,
         *,
         retries: int = 3,
         delay: float = 1,
         delay_is_exponential: bool = False,
-        only_exceptions_of_type: List[Type[BaseException]] = None,
+        only_exceptions_of_type: list[type[BaseException]] | None = None,
         log_level: int = logging.ERROR
-) -> Union[Callable, Any]:
+) -> Callable | Any:
     """
     A decorator that retries a function call a number of times before giving up.
 
@@ -74,17 +76,17 @@ def retry(
 
 
 def retry_request(
-        func: Optional[Callable] = None,
+        func: Callable | None = None,
         *,
         retries: int = 3,
         delay: float = 1,
         delay_is_exponential: bool = False,
         skip_retry_on_404: bool = False,
-        retry_only_on_status_codes: List[int] = None,
-        get_new_token_on_401: Optional[Callable[[], str]] = None,
-        get_new_token_on_403: Optional[Callable[[], str]] = None,
+        retry_only_on_status_codes: list[int] | None = None,
+        get_new_token_on_401: Callable[[], str] | None = None,
+        get_new_token_on_403: Callable[[], str] | None = None,
         log_level: int = logging.ERROR
-) -> Union[Callable, Any]:
+) -> Callable | Any:
     """
     A decorator that retries a http request a number of times before giving up.
 
