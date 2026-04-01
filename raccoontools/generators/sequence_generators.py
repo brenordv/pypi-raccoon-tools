@@ -1,10 +1,10 @@
+import random
 import time
 import uuid
-from typing import Generator, Callable, Optional
-import random
+from collections.abc import Callable, Generator
 
 
-def id_guid_generator(ids_to_generate: Optional[int] = None) -> Generator[str, None, None]:
+def id_guid_generator(ids_to_generate: int | None = None) -> Generator[str, None, None]:
     """
     Generate unique GUID (Globally Unique Identifier) strings.
 
@@ -26,9 +26,9 @@ def id_guid_generator(ids_to_generate: Optional[int] = None) -> Generator[str, N
 
 
 def id_int_generator(
-    ids_to_generate: Optional[int] = None,
+    ids_to_generate: int | None = None,
     start_at: int = 0,
-    validate_id: Optional[Callable[[int], bool]] = None
+    validate_id: Callable[[int], bool] | None = None
 ) -> Generator[int, None, None]:
     """
     Generate integer IDs with optional validation.
@@ -59,7 +59,7 @@ def id_int_generator(
         ids_generated += 1
 
 
-def timestamp_generator(timestamps_to_generate: Optional[int] = None) -> Generator[int, None, None]:
+def timestamp_generator(timestamps_to_generate: int | None = None) -> Generator[int, None, None]:
     """
     Generate Unix timestamps.
 
@@ -81,9 +81,9 @@ def timestamp_generator(timestamps_to_generate: Optional[int] = None) -> Generat
         timestamps_generated += 1
 
 
-def sentence_generator(sentences_to_generate: Optional[int] = None,
+def sentence_generator(sentences_to_generate: int | None = None,
                        min_length: int = 2,
-                       max_length: Optional[int] = None) -> Generator[str, None, None]:
+                       max_length: int | None = None) -> Generator[str, None, None]:
     """
     Generate Lorem Ipsum sentences with lengths ranging from min_length to max_length.
 

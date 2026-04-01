@@ -1,24 +1,21 @@
 import logging
+from collections.abc import Callable
+from datetime import datetime, timedelta, timezone
 from functools import wraps
-from typing import Callable, Any, Union
-from datetime import datetime, timedelta
-
-try:
-    from datetime import UTC
-except ImportError:
-    from datetime import timezone
-
-    UTC = timezone.utc
 from timeit import default_timer as timer
-from typing_extensions import TypedDict
+from typing import Any
+
+from typing import TypedDict
+
+UTC = timezone.utc
 
 
 class TimerInfo(TypedDict):
-    started_at: Union[datetime, None]
-    stopped_at: Union[datetime, None]
-    start_timer: Union[float, None]
-    end_timer: Union[float, None]
-    elapsed_time: Union[timedelta, None]
+    started_at: datetime | None
+    stopped_at: datetime | None
+    start_timer: float | None
+    end_timer: float | None
+    elapsed_time: timedelta | None
 
 
 def benchmark(func: Callable) -> Callable:
@@ -33,11 +30,11 @@ def benchmark(func: Callable) -> Callable:
     :param func: The function to benchmark
     :return: The decorated function
     """
-    started_at: Union[datetime, None] = None
-    stopped_at: Union[datetime, None] = None
-    start_timer: Union[float, None] = None
-    end_timer: Union[float, None] = None
-    elapsed_time: Union[timedelta, None] = None
+    started_at: datetime | None = None
+    stopped_at: datetime | None = None
+    start_timer: float | None = None
+    end_timer: float | None = None
+    elapsed_time: timedelta | None = None
 
     @wraps(func)
     def wrapper(*args, **kwargs) -> Any:

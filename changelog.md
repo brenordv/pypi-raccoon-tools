@@ -1,4 +1,19 @@
 # Changelog
+## [2.0.0]
+### Breaking changes
+- Dropped Python 3.9 support. Minimum required version is now Python 3.10.
+
+### General
+- Modernized type hints across the codebase: replaced `Union`, `Optional`, `List`, `Dict`, `Tuple`, and `Type` from `typing` with PEP 604 (`X | Y`) and PEP 585 (`list`, `dict`, `tuple`, `type`) syntax.
+- Replaced `datetime.UTC` compatibility shim (`try/except ImportError`) with direct `timezone.utc` usage.
+- Updated CI pipeline to test Python 3.10–3.15 (removed 3.9).
+- Updated PyPI classifiers to reflect supported Python versions (3.10–3.14).
+- Removed `typing-extensions` as a direct dependency (replaced `typing_extensions.TypedDict` with `typing.TypedDict`, available since Python 3.8).
+- Updated `requests` and `urllib3` dependency versions to address security vulnerabilities.
+
+### Added
+- `get_date_based_subfolder`: New utility to create/get date-based subdirectories with configurable format, UTC support, and delta offsets.
+
 ## [1.3.1]
 ### Bug fixes
 - `obj_to_dict`: Fixed `dict` inputs not being recognized as valid — dicts are now returned as-is instead of raising `ValueError`.
