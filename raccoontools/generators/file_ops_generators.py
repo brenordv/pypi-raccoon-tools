@@ -147,7 +147,7 @@ def read_csv(file: str | Path, encoding: str = "utf-8", has_headers: bool = True
         metadata = CsvRowMetadata(
             index=row_index,
             data_line_number=data_line_number,
-            absolute_line_number=row_index + 1,
+            absolute_line_number=row_index,
             raw_data=line_without_newline,
             headers=metadata_headers
         )

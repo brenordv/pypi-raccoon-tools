@@ -11,6 +11,9 @@
 - Removed `typing-extensions` as a direct dependency (replaced `typing_extensions.TypedDict` with `typing.TypedDict`, available since Python 3.8).
 - Updated `requests` and `urllib3` dependency versions to address security vulnerabilities.
 
+### Bug fixes
+- `read_csv`: Fixed off-by-one error in `absolute_line_number` metadata (was reporting one line too high).
+
 ### Added
 - `get_date_based_subfolder`: New utility to create/get date-based subdirectories with configurable format, UTC support, and delta offsets.
 
