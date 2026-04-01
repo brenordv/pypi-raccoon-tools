@@ -165,6 +165,24 @@ class TestGetDateBasedSubfolder:
         )
         assert result == tmp_path / "2025-07-04"
 
+    def test_nonexistent_path_with_extension_uses_parent(self, tmp_path):
+        fake_file = tmp_path / "output" / "report.json"
+        date_ref = datetime(2025, 7, 4, tzinfo=timezone.utc)
+
+        result = get_date_based_subfolder(
+            fake_file, date_ref=date_ref, create_if_missing=False
+        )
+        assert result == tmp_path / "output" / "2025-07-04"
+
+    def test_nonexistent_path_without_extension_treated_as_dir(self, tmp_path):
+        fake_dir = tmp_path / "output" / "reports"
+        date_ref = datetime(2025, 7, 4, tzinfo=timezone.utc)
+
+        result = get_date_based_subfolder(
+            fake_dir, date_ref=date_ref, create_if_missing=False
+        )
+        assert result == fake_dir / "2025-07-04"
+
     def test_use_utc_true_calls_now_with_tz(self, tmp_path):
         with patch(
             "raccoontools.shared.file_utils.datetime"
