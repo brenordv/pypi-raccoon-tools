@@ -2,6 +2,8 @@
 This is a collection of tools that I regularly use on several projects. To stop duplicating and to (hopefully) help
 someone, I decided to make them into a public package.
 
+[![vet OSS Components](https://github.com/brenordv/pypi-raccoon-tools/actions/workflows/vet.yml/badge.svg)](https://github.com/brenordv/pypi-raccoon-tools/actions/workflows/vet.yml)
+
 # Functionalities
 ## Decorators
 
