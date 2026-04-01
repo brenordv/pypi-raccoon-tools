@@ -7,12 +7,12 @@ UTC = timezone.utc
 
 def get_filename_for_new_file(
         file_extension: str,
-        prefix: str = None,
+        prefix: str | None = None,
         add_current_datetime_as_format: str = "%Y%m%d%H%M%S%f",
         use_utc: bool = True,
         unique_identifier: str | bool = True,
         part_separator: str = "-",
-        suffix: str = None
+        suffix: str | None = None
 ) -> str:
     """
     Generates a filename for a new file.

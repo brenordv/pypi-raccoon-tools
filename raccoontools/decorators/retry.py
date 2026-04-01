@@ -17,7 +17,7 @@ def retry(
         retries: int = 3,
         delay: float = 1,
         delay_is_exponential: bool = False,
-        only_exceptions_of_type: list[type[BaseException]] = None,
+        only_exceptions_of_type: list[type[BaseException]] | None = None,
         log_level: int = logging.ERROR
 ) -> Callable | Any:
     """
@@ -82,7 +82,7 @@ def retry_request(
         delay: float = 1,
         delay_is_exponential: bool = False,
         skip_retry_on_404: bool = False,
-        retry_only_on_status_codes: list[int] = None,
+        retry_only_on_status_codes: list[int] | None = None,
         get_new_token_on_401: Callable[[], str] | None = None,
         get_new_token_on_403: Callable[[], str] | None = None,
         log_level: int = logging.ERROR

@@ -1,9 +1,5 @@
-import re
-from datetime import datetime, timedelta, timezone
-from pathlib import Path
+from datetime import datetime, timezone
 from unittest.mock import patch
-
-import pytest
 
 from raccoontools.shared.file_utils import (
     get_date_based_subfolder,

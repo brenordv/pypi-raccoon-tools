@@ -1,9 +1,11 @@
+import csv
 import warnings
+from collections.abc import Callable
 from datetime import datetime
 from io import StringIO
 from pathlib import Path
+
 from pydantic import BaseModel
-import csv
 
 
 _PATH_LIB_OBJ_TAG = "[PATHLIBOBJ]"
@@ -34,7 +36,7 @@ def obj_to_dict(obj) -> dict:
     raise ValueError(f"Could not convert object of type {type(obj)} to a dict.")
 
 
-def serialize_to_dict(obj, obj_serializer: callable = None) -> dict | list[dict] | None:
+def serialize_to_dict(obj, obj_serializer: Callable | None = None) -> dict | list[dict] | None:
     """
     Serialize obj to a dict or a list of dicts. Useful when sending complex objects in http requests.
     If the obj passed is a dict, will iterate over all the properties and convert them to dicts.

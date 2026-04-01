@@ -46,7 +46,7 @@ def load_json_from_file(
 def save_json_to_file(
         data: dict | list[dict],
         target_file_or_folder: Path,
-        dump_kwargs: dict = None,
+        dump_kwargs: dict | None = None,
         encoding: str = "utf-8"
 ) -> Path:
     """

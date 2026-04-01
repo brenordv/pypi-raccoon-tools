@@ -24,9 +24,9 @@ def _get_header_value(key: str, value: str) -> dict[str, str]:
 def get_headers(
         token: str | None = None,
         content_type: str = "application/json",
-        user_agent: str = None,
+        user_agent: str | None = None,
         fake_browser_user_agent: bool = False,
-        extra_args: dict[str, str] = None) -> dict[str, str]:
+        extra_args: dict[str, str] | None = None) -> dict[str, str]:
     """
     Get the headers for an HTTP request.
     :param token: Authentication token. If None or empty, no Authorization header is set.
