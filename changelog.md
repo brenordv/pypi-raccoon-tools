@@ -1,4 +1,7 @@
 # Changelog
+## [2.0.1]
+Nothing changed in the code. Just fixed the readme.md file.
+
 ## [2.0.0]
 ### Breaking changes
 - Dropped Python 3.9 support. The minimum required version is now Python 3.10.
