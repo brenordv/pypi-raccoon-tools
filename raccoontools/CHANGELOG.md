@@ -1,4 +1,7 @@
 # Changelog
+## [3.0.0]
+Dropped support for Python 3.10. Minimum required version is now Python 3.11.
+
 ## [2.0.1]
 Nothing changed in the code. Just fixed the readme.md file.
 

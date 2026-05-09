@@ -30,7 +30,7 @@ jobs:
         uses: safedep/vet-action@5647f2e7f0a1b2fa735f0d7fcd73255bc2512a3a # v1.1.9
         with:
           policy: .github/vet/policy.yml
-          path: raccoontools
+          exception-file: .github/vet/exceptions.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
