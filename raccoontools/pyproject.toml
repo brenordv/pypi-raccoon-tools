@@ -34,7 +34,7 @@ dependencies = [
     # https://github.com/brenordv/pypi-raccoon-tools/security/dependabot/1
     # https://github.com/brenordv/pypi-raccoon-tools/security/dependabot/2
     # https://github.com/brenordv/pypi-raccoon-tools/security/dependabot/3
-    "urllib3==2.7.0" # Adding
+    "urllib3==2.7.0"
 ]
 requires-python = ">=3.10"
 
