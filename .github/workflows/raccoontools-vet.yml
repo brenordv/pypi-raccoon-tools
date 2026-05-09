@@ -1,10 +1,14 @@
-name: vet OSS Components
+name: "raccoontools: vet OSS Components"
 
 on:
   pull_request:
+    paths:
+      - 'raccoontools/**'
   push:
     branches:
       - master
+    paths:
+      - 'raccoontools/**'
 
 permissions:
   contents: read
@@ -19,19 +23,20 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Run vet
         id: vet
-        uses: safedep/vet-action@v1
+        uses: safedep/vet-action@5647f2e7f0a1b2fa735f0d7fcd73255bc2512a3a # v1.1.9
         with:
           policy: .github/vet/policy.yml
+          exception-file: .github/vet/exceptions.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload SARIF
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@7fd177fa680c9881b53cdab4d346d32574c9f7f4 # v3.35.4
         if: ${{ steps.vet.outputs.report != '' }}
         with:
           sarif_file: ${{ steps.vet.outputs.report }}
-          category: vet
+          category: vet-raccoontools

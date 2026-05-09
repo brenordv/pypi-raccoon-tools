@@ -1,0 +1,25 @@
+description: Exceptions for known safe dependencies
+exceptions:
+  - ecosystem: PyPI
+    expires: "2027-05-08T00:00:00Z"
+    id: raccoontools-simple-log-factory
+    name: simple-log-factory
+    version: "*"
+
+  - ecosystem: PyPI
+    expires: "2027-05-08T00:00:00Z"
+    id: raccoontools-raccoon-simple-stopwatch
+    name: raccoon-simple-stopwatch
+    version: "*"
+
+  - ecosystem: PyPI
+    expires: "2027-05-08T00:00:00Z"
+    id: raccoontools-simple-log-factory-ext-otel
+    name: simple-log-factory-ext-otel
+    version: "*"
+
+  - ecosystem: PyPI
+    expires: "2027-05-08T00:00:00Z"
+    id: raccoontools-colorama
+    name: colorama
+    version: "*"
