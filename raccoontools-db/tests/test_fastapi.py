@@ -33,11 +33,17 @@ def mock_deps(mocker):
 
 
 class TestCreateLifespan:
+    def test_returns_callable(self, config):
+        lifespan = create_lifespan(config)
+        assert callable(lifespan)
+
     @pytest.mark.asyncio
     async def test_lifespan_opens_and_closes(self, config, mock_deps):
         mock_pool_cls = mock_deps
+        lifespan = create_lifespan(config)
+        mock_app = MagicMock()
 
-        async with create_lifespan(config):
+        async with lifespan(mock_app):
             pool = get_pool()
             assert pool is mock_pool_cls.return_value
             mock_pool_cls.return_value.open.assert_called_once()
@@ -50,9 +56,11 @@ class TestCreateLifespan:
     @pytest.mark.asyncio
     async def test_lifespan_closes_on_error(self, config, mock_deps):
         mock_pool_cls = mock_deps
+        lifespan = create_lifespan(config)
+        mock_app = MagicMock()
 
         with pytest.raises(ValueError, match="app error"):
-            async with create_lifespan(config):
+            async with lifespan(mock_app):
                 raise ValueError("app error")
 
         # Pool should still be closed even after error

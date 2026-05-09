@@ -41,11 +41,11 @@ class PoolConfig:
     """OTLP protocol (HTTP vs gRPC)."""
 
     def __post_init__(self):
-      if self.use_otel and not self.otel_service_name:
-          raise ValueError("otel_service_name is required when use_otel=True")
+        if self.use_otel and not self.otel_service_name:
+            raise ValueError("otel_service_name is required when use_otel=True")
 
-      if self.use_otel and not self.otel_exporter_endpoint:
-          raise ValueError("otel_exporter_endpoint is required when use_otel=True")
+        if self.use_otel and not self.otel_exporter_endpoint:
+            raise ValueError("otel_exporter_endpoint is required when use_otel=True")
 
 
 def create_pool(config: PoolConfig) -> None:

@@ -41,7 +41,7 @@ requires-python = ">=3.11"
 "Homepage" = "https://github.com/brenordv/pypi-raccoon-tools"
 "Source" = "https://github.com/brenordv/pypi-raccoon-tools"
 "Bug Tracker" = "https://github.com/brenordv/pypi-raccoon-tools/issues"
-"Changelog" = "https://github.com/brenordv/pypi-raccoon-tools/blob/master/raccoontools/changelog.md"
+"Changelog" = "https://github.com/brenordv/pypi-raccoon-tools/blob/master/raccoontools/CHANGELOG.md"
 "Author" = "https://raccoon.ninja"
 
 [build-system]

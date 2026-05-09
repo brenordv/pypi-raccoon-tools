@@ -6,31 +6,39 @@ to FastAPI's startup/shutdown lifecycle.
 
 from __future__ import annotations
 
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
+from typing import Any
 
 from raccoontools_db.pool import PoolConfig, close_pool, create_pool
 
 
-@asynccontextmanager
-async def create_lifespan(config: PoolConfig) -> AsyncGenerator:
-    """FastAPI lifespan context manager.
+def create_lifespan(config: PoolConfig):
+    """Create a FastAPI lifespan context manager.
 
     Opens the connection pool on startup and closes it on shutdown.
 
     Args:
         config: Pool configuration.
 
+    Returns:
+        An async context manager compatible with FastAPI's lifespan protocol.
+
     Usage::
 
         from raccoontools_db.fastapi import create_lifespan
         from raccoontools_db.pool import PoolConfig
 
-        config = PoolConfig(conninfo="postgresql://user:pass@host/db")
+        config = PoolConfig(conn_info="postgresql://user:pass@host/db")
         app = FastAPI(lifespan=create_lifespan(config))
     """
-    create_pool(config)
-    try:
-        yield
-    finally:
-        close_pool()
+
+    @asynccontextmanager
+    async def _lifespan(app: Any) -> AsyncGenerator[None]:
+        create_pool(config)
+        try:
+            yield
+        finally:
+            close_pool()
+
+    return _lifespan
