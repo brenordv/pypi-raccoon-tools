@@ -1,4 +1,9 @@
 # Changelog
+## [3.1.0]
+
+### Added
+- `timestamp_to_datetime`: New converter that turns numeric timestamps (seconds, milliseconds, microseconds, or nanoseconds) into timezone-aware `datetime` objects. Uses integer arithmetic for `int` inputs to avoid IEEE-754 float rounding. Defaults to milliseconds and UTC.
+
 ## [3.0.0]
 Dropped support for Python 3.10. Minimum required version is now Python 3.11.
 
