@@ -3,7 +3,7 @@ name = "raccoontools-db"
 version = "1.0.0"
 description = "A collection of utilities to be used with databases."
 readme = "README.md"
-license = { text = "MIT License" }
+license = { file = "LICENSE.txt" }
 authors = [
     { name = "Breno RdV", email = "hello@raccoon.ninja" },
 ]
@@ -25,8 +25,17 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dependencies = []
+dependencies = [
+    "psycopg[binary,pool]==3.3.4",
+    "simple-log-factory==1.0.0",
+]
 requires-python = ">=3.10"
+
+[project.optional-dependencies]
+otel = ["simple-log-factory-ext-otel[psycopg]==1.5.0"]
+fastapi = ["simple-log-factory-ext-otel[fastapi]==1.5.0"]
+all = ["simple-log-factory-ext-otel[fastapi,psycopg]==1.5.0"]
+dev = ["pytest>=8.0", "pytest-mock>=3.12", "pytest-asyncio>=0.23"]
 
 [project.urls]
 "Homepage" = "https://github.com/brenordv/pypi-raccoon-tools"
@@ -34,6 +43,9 @@ requires-python = ">=3.10"
 "Bug Tracker" = "https://github.com/brenordv/pypi-raccoon-tools/issues"
 "Changelog" = "https://github.com/brenordv/pypi-raccoon-tools/blob/master/raccoontools-db/CHANGELOG.md"
 "Author" = "https://raccoon.ninja"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
 
 [build-system]
 requires = ["setuptools>=75", "wheel"]
