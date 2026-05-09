@@ -1,10 +1,14 @@
-name: vet OSS Components
+name: "raccoontools-db: vet OSS Components"
 
 on:
   pull_request:
+    paths:
+      - 'raccoontools-db/**'
   push:
     branches:
       - master
+    paths:
+      - 'raccoontools-db/**'
 
 permissions:
   contents: read
@@ -19,13 +23,14 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Run vet
         id: vet
         uses: safedep/vet-action@v1
         with:
           policy: .github/vet/policy.yml
+          path: raccoontools-db
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -34,4 +39,4 @@ jobs:
         if: ${{ steps.vet.outputs.report != '' }}
         with:
           sarif_file: ${{ steps.vet.outputs.report }}
-          category: vet
+          category: vet-raccoontools-db

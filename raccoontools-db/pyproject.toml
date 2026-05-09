@@ -1,0 +1,40 @@
+[project]
+name = "raccoontools-db"
+version = "1.0.0"
+description = "A collection of utilities to be used with databases."
+readme = "README.md"
+license = { text = "MIT License" }
+authors = [
+    { name = "Breno RdV", email = "hello@raccoon.ninja" },
+]
+maintainers = [
+    { name = "Breno RdV", email = "hello@raccoon.ninja" },
+]
+keywords = ["database", "db", "utilities", "tools", "helpers", "python"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = []
+requires-python = ">=3.10"
+
+[project.urls]
+"Homepage" = "https://github.com/brenordv/pypi-raccoon-tools"
+"Source" = "https://github.com/brenordv/pypi-raccoon-tools"
+"Bug Tracker" = "https://github.com/brenordv/pypi-raccoon-tools/issues"
+"Changelog" = "https://github.com/brenordv/pypi-raccoon-tools/blob/master/raccoontools-db/CHANGELOG.md"
+"Author" = "https://raccoon.ninja"
+
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"

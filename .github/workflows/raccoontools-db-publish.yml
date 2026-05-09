@@ -1,13 +1,18 @@
-name: Publish Python Package
+name: "raccoontools-db: Publish Python Package"
 
 on:
   push:
     branches:
       - master
+    paths:
+      - 'raccoontools-db/**'
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: raccoontools-db
     strategy:
       matrix:
         python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
@@ -34,6 +39,9 @@ jobs:
   build-and-publish:
     needs: test
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: raccoontools-db
 
     steps:
       - name: Check out the code
