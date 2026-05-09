@@ -195,6 +195,39 @@ for sentence in sentence_generator(2, min_length=40, max_length=80):
     print(sentence)
 ```
 
+## Converters
+
+### `timestamp_to_datetime`
+Converts a numeric timestamp to a timezone-aware `datetime` object. Uses integer arithmetic for `int` inputs to
+preserve full microsecond precision without IEEE-754 float rounding.
+
+**Parameters:**
+- `timestamp`: The numeric timestamp value (`int` or `float`).
+- `unit`: Unit of the input: `"s"`, `"ms"`, `"us"`, or `"ns"` (default: `"ms"`).
+- `tz`: Target timezone (default: `timezone.utc`). Pass `None` to get a naive datetime.
+
+**Example:**
+```python
+from raccoontools.converters.datetime_converters import timestamp_to_datetime
+
+# Milliseconds (default) — e.g. Nightscout, JavaScript Date.now()
+dt = timestamp_to_datetime(1_700_000_000_000)
+print(dt)  # 2023-11-14 22:13:20+00:00
+
+# Seconds
+dt = timestamp_to_datetime(1_700_000_000, unit="s")
+
+# Nanoseconds — sub-microsecond part is truncated
+dt = timestamp_to_datetime(1_700_000_000_123_456_789, unit="ns")
+print(dt.microsecond)  # 123456
+
+# Custom timezone
+from datetime import timezone, timedelta
+tz_ist = timezone(timedelta(hours=5, minutes=30))
+dt = timestamp_to_datetime(1_700_000_000_000, tz=tz_ist)
+print(dt)  # 2023-11-15 03:43:20+05:30
+```
+
 ## Shared Utilities
 
 ### `file_ops`
