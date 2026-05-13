@@ -1,4 +1,8 @@
 # Changelog
+
+## [3.2.0]
+- Updated `requests` to `2.24.0`.
+
 ## [3.1.0]
 
 ### Added
