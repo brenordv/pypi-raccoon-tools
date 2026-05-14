@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.2.1]
+- Re-added `"urllib3==2.7.0"` to solve security vulnerabilities. Package actually used by `requests`.
+- Updated `requests` to `2.24.1`.
+
 ## [3.2.0]
 - Updated `requests` to `2.24.0`.
 
