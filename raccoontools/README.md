@@ -228,6 +228,66 @@ dt = timestamp_to_datetime(1_700_000_000_000, tz=tz_ist)
 print(dt)  # 2023-11-15 03:43:20+05:30
 ```
 
+### `timedelta_to_readable_elapsed_time`
+Converts a `timedelta` to a human-readable elapsed time string (e.g. `"2 days and 5 hours ago"`).
+Uses approximate 30-day months and 365-day years.
+
+**Parameters:**
+- `delta`: The `timedelta` to format. Must be non-negative.
+- `suffix`: Text appended after the time string (default: `"ago"`). Pass `""` or `None` to omit.
+- `zero_delta_label`: Returned when the delta is below `zero_delta_threshold` (default: `"just now"`).
+- `zero_delta_threshold`: Deltas below this value return `zero_delta_label` (default: `timedelta(seconds=60)`). Pass `None` to always show the real representation (e.g. `"30 seconds ago"`).
+
+**Example:**
+```python
+from datetime import timedelta
+from raccoontools.converters.datetime_converters import timedelta_to_readable_elapsed_time
+
+print(timedelta_to_readable_elapsed_time(timedelta(days=400)))
+# '1 year, 1 month and 5 days ago'
+
+print(timedelta_to_readable_elapsed_time(timedelta(hours=1, minutes=30)))
+# '1 hour and 30 minutes ago'
+
+print(timedelta_to_readable_elapsed_time(timedelta(seconds=10)))
+# 'just now'
+
+# Show seconds instead of "just now"
+print(timedelta_to_readable_elapsed_time(timedelta(seconds=30), zero_delta_threshold=None))
+# '30 seconds ago'
+
+print(timedelta_to_readable_elapsed_time(timedelta(hours=2), suffix="elapsed"))
+# '2 hours elapsed'
+
+print(timedelta_to_readable_elapsed_time(timedelta(hours=2), suffix=None))
+# '2 hours'
+```
+
+### `time_value_to_readable_elapsed_time`
+Convenience wrapper that converts a numeric value + unit into a `timedelta` and delegates
+to `timedelta_to_readable_elapsed_time`.
+
+**Parameters:**
+- `value`: The numeric amount (`int` or `float`). Must be non-negative and finite.
+- `time_piece`: Unit — one of `"milliseconds"`, `"seconds"`, `"minutes"`, `"hours"`, `"days"`, `"weeks"` (default: `"seconds"`).
+- `suffix`: Text appended after the time string (default: `"ago"`).
+- `zero_delta_label`: Returned when the resulting delta is below `zero_delta_threshold` (default: `"just now"`).
+- `zero_delta_threshold`: Deltas below this value return `zero_delta_label` (default: `timedelta(seconds=60)`). Pass `None` to always show the real representation.
+
+**Example:**
+```python
+from raccoontools.converters.datetime_converters import time_value_to_readable_elapsed_time
+
+print(time_value_to_readable_elapsed_time(3600))
+# '1 hour ago'
+
+print(time_value_to_readable_elapsed_time(2, time_piece="days"))
+# '2 days ago'
+
+print(time_value_to_readable_elapsed_time(1.5, time_piece="hours"))
+# '1 hour and 30 minutes ago'
+```
+
 ## Shared Utilities
 
 ### `file_ops`
