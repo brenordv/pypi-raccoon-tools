@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.3.0]
+
+### Added
+- `timedelta_to_readable_elapsed_time`: New converter that formats a `timedelta` as a human-readable elapsed time string (e.g. `"2 days and 5 hours ago"`). Supports configurable suffix, zero-delta label, and a `zero_delta_threshold` parameter to control when seconds-level detail is shown vs. returning a label like `"just now"`.
+- `time_value_to_readable_elapsed_time`: Convenience wrapper that accepts a numeric value and unit (e.g. `3600, "seconds"` or `2, "days"`) and delegates to `timedelta_to_readable_elapsed_time`.
+
 ## [3.2.1]
 - Re-added `"urllib3==2.7.0"` to solve security vulnerabilities. Package actually used by `requests`.
 - Updated `requests` to `2.24.1`.
