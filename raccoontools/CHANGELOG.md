@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.3.1]
+- Security update. Added `idna` as explicit dependency to address security vulnerabilities surfaced by the use of `requests`. Will remove as soon as `requests` catches up.
+
 ## [3.3.0]
 
 ### Added
