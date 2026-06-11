@@ -54,7 +54,7 @@ def get_filename_for_new_file(
 
 
 def get_date_based_subfolder(
-        ref_path: Path,
+        ref_path: Path | str,
         use_utc: bool = True,
         date_ref: datetime | None = None,
         add_delta_days: int | None = None,
@@ -64,8 +64,9 @@ def get_date_based_subfolder(
     """
     Gets a subfolder for the reference date. Using the specified date format (by default YYYY-MM-DD).
 
-    :param ref_path: Folder that will be used as the main folder. If a file is provided, will use the parent as the
-    base. Caveat: If the path is a folder that doesn't exist, and has a dot in its name (i.e: '~/projects/my.project.data'), we'll assume it's a file.
+    :param ref_path: Folder that will be used as the main folder, as a ``Path`` or a string path. If a file is
+    provided, will use the parent as the base. Caveat: If the path is a folder that doesn't exist, and has a dot in
+    its name (i.e: '~/projects/my.project.data'), we'll assume it's a file.
     :param use_utc: If True, will use the UTC timezone. Only has an effect if date_ref is None.
     :param date_ref: The date to use as the reference. If None, will use the current date.
     :param add_delta_days: If informed, will add the delta days to the date.
@@ -73,6 +74,8 @@ def get_date_based_subfolder(
     :param create_if_missing: If True, will create the folder if it doesn't exist. (Default: True)
     :return: The subfolder path.
     """
+    ref_path = Path(ref_path)
+
     base_path = ref_path.parent if ref_path.is_file() or ref_path.suffix != "" else ref_path
 
     if date_ref is not None:
