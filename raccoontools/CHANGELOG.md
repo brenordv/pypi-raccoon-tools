@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.4.0]
+
+### Changed
+- `load_json_from_file` and `save_json_to_file` now accept a string path in addition to a `Path` for the file/folder argument. `save_json_to_file` raises `ValueError` if the target is an empty (or whitespace-only) string.
+- `get_date_based_subfolder` now accepts a string path in addition to a `Path` for `ref_path`.
+- Bumped `idna` to `3.18`. (Not directly used in the repo. Added to solve security vulnerabilities surfaced by the use of `requests`.)
+
 ## [3.3.1]
 - Security update. Added `idna` as explicit dependency to address security vulnerabilities surfaced by the use of `requests`. Will remove as soon as `requests` catches up.
 

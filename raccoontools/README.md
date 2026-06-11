@@ -293,8 +293,8 @@ print(time_value_to_readable_elapsed_time(1.5, time_piece="hours"))
 ### `file_ops`
 Provides functions to load and save JSON data to and from files.
 
-- `load_json_from_file(file: Path, encoding: str = "utf-8", object_hook: Callable | None = obj_dump_deserializer) -> dict | list[dict]`: Loads a JSON file and returns the data as a dictionary or list of dictionaries. By default, uses `obj_dump_deserializer` to reconstruct types (datetime, int, float, Path). Pass `object_hook=None` for raw JSON parsing with no type coercion.
-- `save_json_to_file(data: dict | list[dict], target_file_or_folder: Path, dump_kwargs: dict | None = None, encoding: str = "utf-8") -> Path`: Saves a dictionary or list of dictionaries to a JSON file.
+- `load_json_from_file(file: Path | str, encoding: str = "utf-8", object_hook: Callable | None = obj_dump_deserializer) -> dict | list[dict]`: Loads a JSON file and returns the data as a dictionary or list of dictionaries. Accepts a `Path` or a string path. By default, uses `obj_dump_deserializer` to reconstruct types (datetime, int, float, Path). Pass `object_hook=None` for raw JSON parsing with no type coercion.
+- `save_json_to_file(data: dict | list[dict], target_file_or_folder: Path | str, dump_kwargs: dict | None = None, encoding: str = "utf-8") -> Path`: Saves a dictionary or list of dictionaries to a JSON file. Accepts a `Path` or a string path (an empty string raises `ValueError`).
 
 **Example:**
 ```python
@@ -313,7 +313,7 @@ print(saved_file, loaded_payload)
 Provides utility functions for file operations.
 
 - `get_filename_for_new_file(file_extension: str, prefix: str | None = None, add_current_datetime_as_format: str = "%Y%m%d%H%M%S%f", use_utc: bool = True, unique_identifier: str | bool = True, part_separator: str = "-", suffix: str | None = None) -> str`: Generates a unique filename for a new file.
-- `get_date_based_subfolder(ref_path: Path, use_utc: bool = True, date_ref: datetime | None = None, add_delta_days: int | None = None, date_format: str = "%Y-%m-%d", create_if_missing: bool = True) -> Path`: Gets (or creates) a date-based subfolder under the given path. If `ref_path` points to a file (or has a file extension), uses its parent directory as the base.
+- `get_date_based_subfolder(ref_path: Path | str, use_utc: bool = True, date_ref: datetime | None = None, add_delta_days: int | None = None, date_format: str = "%Y-%m-%d", create_if_missing: bool = True) -> Path`: Gets (or creates) a date-based subfolder under the given path. Accepts a `Path` or a string path. If `ref_path` points to a file (or has a file extension), uses its parent directory as the base.
 
 **Example:**
 ```python

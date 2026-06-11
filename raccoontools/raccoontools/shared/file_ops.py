@@ -15,14 +15,14 @@ _JSON_DUMPS_PARAMS = {
 
 
 def load_json_from_file(
-        file: Path,
+        file: Path | str,
         encoding: str = "utf-8",
         object_hook: Callable | None = _USE_DEFAULT_HOOK,
 ) -> dict | list[dict]:
     """
     Loads a JSON file and returns the data as dict or List[dict].
 
-    :param file: The file to load.
+    :param file: The file to load, as a ``Path`` or a string path.
     :param encoding: The encoding of the file. (Default: utf-8)
     :param object_hook: A function to customize JSON object decoding. By default,
     uses ``obj_dump_deserializer`` which reconstructs datetime, int, float and Path
@@ -31,6 +31,8 @@ def load_json_from_file(
     :raises FileNotFoundError: If the file does not exist or cannot be accessed.
     :return: The data from the file.
     """
+    file = Path(file)
+
     if file.is_dir():
         raise ValueError("The file must be a file, not a directory.")
 
@@ -45,23 +47,28 @@ def load_json_from_file(
 
 def save_json_to_file(
         data: dict | list[dict],
-        target_file_or_folder: Path,
+        target_file_or_folder: Path | str,
         dump_kwargs: dict | None = None,
         encoding: str = "utf-8"
 ) -> Path:
     """
     Saves a dict or List[dict] to a JSON file.
     :param data: The data to save.
-    :param target_file_or_folder: The file or folder to save the data. If the value passed is a folder, will
-    automatically generate a unique (and sortable) filename.
+    :param target_file_or_folder: The file or folder to save the data, as a ``Path`` or a string path. If the value
+    passed is a folder, will automatically generate a unique (and sortable) filename.
     :param dump_kwargs: The kwargs to pass to the json.dump function. If you want to use the defaults values, you can
     pass an empty dictionary in this argument. (Default: indent=2, ensure_ascii=True)
     :param encoding: The encoding of the file. (Default: utf-8)
-    :raises ValueError: If data or target_file_or_folder is None.
+    :raises ValueError: If data or target_file_or_folder is None, or if target_file_or_folder is an empty string.
     :return: The file where the data was saved.
     """
     if any(arg is None for arg in [data, target_file_or_folder]):
         raise ValueError("Both data and target_file_or_folder must be informed.")
+
+    if isinstance(target_file_or_folder, str) and not target_file_or_folder.strip():
+        raise ValueError("target_file_or_folder cannot be an empty string.")
+
+    target_file_or_folder = Path(target_file_or_folder)
 
     if dump_kwargs is None:
         dump_kwargs = _JSON_DUMPS_PARAMS

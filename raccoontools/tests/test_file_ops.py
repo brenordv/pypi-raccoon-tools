@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import pytest
 
@@ -21,14 +22,30 @@ class TestLoadJsonFromFile:
         assert isinstance(result, list)
         assert len(result) == 2
 
+    def test_loads_from_str_path(self, tmp_path):
+        file = tmp_path / "data.json"
+        file.write_text('{"key": "value"}', encoding="utf-8")
+
+        result = load_json_from_file(str(file))
+        assert result["key"] == "value"
+
     def test_raises_on_directory(self, tmp_path):
         with pytest.raises(ValueError, match="not a directory"):
             load_json_from_file(tmp_path)
+
+    def test_raises_on_directory_str_path(self, tmp_path):
+        with pytest.raises(ValueError, match="not a directory"):
+            load_json_from_file(str(tmp_path))
 
     def test_raises_on_missing_file(self, tmp_path):
         missing = tmp_path / "nope.json"
         with pytest.raises(FileNotFoundError):
             load_json_from_file(missing)
+
+    def test_raises_on_missing_file_str_path(self, tmp_path):
+        missing = tmp_path / "nope.json"
+        with pytest.raises(FileNotFoundError):
+            load_json_from_file(str(missing))
 
 
 class TestSaveJsonToFile:
@@ -51,9 +68,29 @@ class TestSaveJsonToFile:
         loaded = json.loads(file.read_text(encoding="utf-8"))
         assert len(loaded) == 2
 
+    def test_saves_dict_to_str_path(self, tmp_path):
+        file = tmp_path / "out.json"
+        data = {"name": "test", "value": 42}
+
+        result = save_json_to_file(data, str(file))
+        assert result == file
+        assert isinstance(result, Path)
+        assert file.exists()
+
+        loaded = json.loads(file.read_text(encoding="utf-8"))
+        assert loaded["name"] == "test"
+
     def test_auto_generates_filename_for_directory(self, tmp_path):
         data = {"key": "val"}
         result = save_json_to_file(data, tmp_path)
+
+        assert result.parent == tmp_path
+        assert result.suffix == ".json"
+        assert result.exists()
+
+    def test_auto_generates_filename_for_directory_str_path(self, tmp_path):
+        data = {"key": "val"}
+        result = save_json_to_file(data, str(tmp_path))
 
         assert result.parent == tmp_path
         assert result.suffix == ".json"
@@ -66,6 +103,11 @@ class TestSaveJsonToFile:
     def test_raises_on_none_target(self):
         with pytest.raises(ValueError, match="must be informed"):
             save_json_to_file({"a": 1}, None)
+
+    @pytest.mark.parametrize("empty_target", ["", "   "])
+    def test_raises_on_empty_str_target(self, empty_target):
+        with pytest.raises(ValueError, match="empty string"):
+            save_json_to_file({"a": 1}, empty_target)
 
     def test_custom_dump_kwargs(self, tmp_path):
         file = tmp_path / "compact.json"

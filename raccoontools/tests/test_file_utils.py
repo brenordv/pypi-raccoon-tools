@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from pathlib import Path
 from unittest.mock import patch
 
 from raccoontools.shared.file_utils import (
@@ -219,3 +220,30 @@ class TestGetDateBasedSubfolder:
         )
         assert result.exists()
         assert result == base / "2025-01-01"
+
+    def test_accepts_str_path_for_folder(self, tmp_path):
+        date_ref = datetime(2025, 3, 15, tzinfo=timezone.utc)
+        result = get_date_based_subfolder(
+            str(tmp_path), date_ref=date_ref, create_if_missing=False
+        )
+        assert isinstance(result, Path)
+        assert result == tmp_path / "2025-03-15"
+
+    def test_str_path_to_file_uses_parent(self, tmp_path):
+        file_path = tmp_path / "some_file.txt"
+        file_path.write_text("data")
+        date_ref = datetime(2025, 7, 4, tzinfo=timezone.utc)
+
+        result = get_date_based_subfolder(
+            str(file_path), date_ref=date_ref, create_if_missing=False
+        )
+        assert result == tmp_path / "2025-07-04"
+
+    def test_str_path_nonexistent_with_extension_uses_parent(self, tmp_path):
+        fake_file = tmp_path / "output" / "report.json"
+        date_ref = datetime(2025, 7, 4, tzinfo=timezone.utc)
+
+        result = get_date_based_subfolder(
+            str(fake_file), date_ref=date_ref, create_if_missing=False
+        )
+        assert result == tmp_path / "output" / "2025-07-04"
