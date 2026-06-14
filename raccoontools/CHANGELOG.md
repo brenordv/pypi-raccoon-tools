@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.5.0]
+
+### Added
+- `string_utils.linefy`: New string helper that collapses a multi-line string into a single line. Removes all linebreaks, merges sequential whitespace runs into a single space, and trims the ends. Raises `TypeError` for non-string input.
+
 ## [3.4.0]
 
 ### Changed
