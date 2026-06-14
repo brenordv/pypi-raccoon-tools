@@ -1,6 +1,6 @@
 [project]
 name = "raccoontools-db"
-version = "1.0.0"
+version = "1.0.1"
 description = "A collection of utilities to be used with databases."
 readme = "README.md"
 license = { file = "LICENSE.txt" }
@@ -27,6 +27,11 @@ classifiers = [
 dependencies = [
     "psycopg[binary,pool]~=3.3.4",
     "simple-log-factory==1.0.0",
+
+    # Adding this dependency explicitly to solve security issues while requests doesn't catch up. Refs:
+    # https://github.com/brenordv/pypi-raccoon-tools/security/dependabot/5
+    # https://github.com/brenordv/pypi-raccoon-tools/security/dependabot/6
+    "idna==3.18"
 ]
 requires-python = ">=3.11"
 
