@@ -327,6 +327,19 @@ folder = get_date_based_subfolder(Path("output/data"), add_delta_days=-1)
 print(folder)  # output/data/2025-03-31
 ```
 
+### `string_utils`
+Provides utility functions for string manipulation.
+
+- `linefy(text: str) -> str`: Collapses a multi-line string into a single line. Removes all linebreaks, merges multiple sequential whitespace characters (spaces, tabs, newlines, etc.) into a single space, and trims leading and trailing whitespace. Raises `TypeError` if `text` is not a `str`.
+
+**Example:**
+```python
+from raccoontools.shared.string_utils import linefy
+
+messy = "  Hello\n\tworld  \n  again  "
+print(linefy(messy))  # Hello world again
+```
+
 ### `http`
 Provides utility functions for HTTP headers.
 
