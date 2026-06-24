@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.6.0]
+
+### Added
+- `comparators.dict_comparators`: New comparison helpers for dictionaries and lists of dictionaries.
+  - `dicts_are_equal` / `compare_dicts`: deep, key-order-independent dictionary comparison. `compare_dicts` returns a `DictComparison` named tuple with `are_equal` and a `DictDiff` (`added` / `removed` / `changed`) keyed by dotted paths (e.g. `"user.address.zip"`). Nested dictionaries are recursed into; every other value (including nested lists, `datetime`, and custom types) is compared as an opaque leaf.
+  - `dict_lists_are_equal` / `compare_dict_lists`: order-independent `list[dict]` comparison (the lists are treated as multisets, so duplicates are counted). `compare_dict_lists` returns a `DictListComparison` with `only_in_a` / `only_in_b`.
+  - The `*_are_equal` functions delegate to their `compare_*` counterparts, so the boolean and detailed results can never disagree. All functions raise `TypeError` for invalid input types.
+
 ## [3.5.0]
 
 ### Added
