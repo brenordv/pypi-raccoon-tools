@@ -288,6 +288,49 @@ print(time_value_to_readable_elapsed_time(1.5, time_piece="hours"))
 # '1 hour and 30 minutes ago'
 ```
 
+## Comparators
+
+### `dicts_are_equal` / `compare_dicts`
+Deeply compares two dictionaries, ignoring key order. Nested dictionaries are recursed into; every other
+value (nested lists, `datetime` objects, custom types, ...) is compared as an opaque leaf via `==`.
+
+- `dicts_are_equal(a: dict, b: dict) -> bool`: Returns `True` if the dictionaries are deeply equal.
+- `compare_dicts(a: dict, b: dict) -> DictComparison`: Returns a named tuple `(are_equal, differences)`. `differences` is a `DictDiff` with `added` / `removed` / `changed` maps, keyed by dotted paths (e.g. `"user.address.zip"`). Both raise `TypeError` for non-dict input.
+
+**Example:**
+```python
+from raccoontools.comparators.dict_comparators import dicts_are_equal, compare_dicts
+
+print(dicts_are_equal({"a": 1, "b": 2}, {"b": 2, "a": 1}))  # True
+
+result = compare_dicts(
+    {"name": "Ada", "role": "dev"},
+    {"name": "Ada", "role": "lead", "active": True},
+)
+print(result.are_equal)              # False
+print(result.differences.changed)    # {'role': ('dev', 'lead')}
+print(result.differences.added)      # {'active': True}
+```
+
+### `dict_lists_are_equal` / `compare_dict_lists`
+Compares two lists of dictionaries **ignoring their order**. The lists are treated as multisets, so
+duplicates are counted. Lists nested *inside* a dictionary remain order-sensitive.
+
+- `dict_lists_are_equal(a: list[dict], b: list[dict]) -> bool`: Returns `True` if both lists hold the same dictionaries in any order.
+- `compare_dict_lists(a: list[dict], b: list[dict]) -> DictListComparison`: Returns a named tuple `(are_equal, differences)`. `differences` is a `DictListDiff` with `only_in_a` / `only_in_b`. Both raise `TypeError` if an argument is not a list or an element is not a dict.
+
+**Example:**
+```python
+from raccoontools.comparators.dict_comparators import dict_lists_are_equal, compare_dict_lists
+
+print(dict_lists_are_equal([{"id": 1}, {"id": 2}], [{"id": 2}, {"id": 1}]))  # True
+
+result = compare_dict_lists([{"id": 1}, {"id": 2}], [{"id": 2}, {"id": 3}])
+print(result.are_equal)              # False
+print(result.differences.only_in_a)  # [{'id': 1}]
+print(result.differences.only_in_b)  # [{'id': 3}]
+```
+
 ## Shared Utilities
 
 ### `file_ops`
