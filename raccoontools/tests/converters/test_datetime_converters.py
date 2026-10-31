@@ -1,4 +1,6 @@
-from datetime import datetime, timedelta, timezone
+import time
+from collections.abc import Iterator
+from datetime import UTC, datetime, timedelta, timezone
 
 import pytest
 
@@ -11,7 +13,25 @@ from raccoontools.converters.datetime_converters import (
     timestamp_to_datetime,
 )
 
-UTC = timezone.utc
+
+@pytest.fixture
+def non_utc_local_time(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+    """Run the test with a process-local time zone three hours behind UTC.
+
+    Where ``time.tzset`` is unavailable (Windows), the machine's own zone is used, and the test is skipped when that
+    zone is UTC, since it could not tell local time from UTC.
+    """
+    if not hasattr(time, "tzset"):
+        if datetime.now().astimezone().utcoffset() == timedelta(0):
+            pytest.skip("local time is UTC and time.tzset is unavailable")
+        yield
+        return
+
+    monkeypatch.setenv("TZ", "Etc/GMT+3")
+    time.tzset()
+    yield
+    monkeypatch.undo()
+    time.tzset()
 
 
 class TestTimestampToDatetimeMilliseconds:
@@ -101,6 +121,14 @@ class TestTimestampToDatetimeIntVsFloat:
         int_result = timestamp_to_datetime(1_700_000_000_000)
         float_result = timestamp_to_datetime(1_700_000_000.0, unit="s")
         assert int_result == float_result
+
+    @pytest.mark.usefixtures("non_utc_local_time")
+    def test_int_and_float_agree_on_naive_utc_when_tz_none(self) -> None:
+        int_result = timestamp_to_datetime(1_700_000_000, unit="s", tz=None)
+        float_result = timestamp_to_datetime(1_700_000_000.0, unit="s", tz=None)
+
+        assert float_result == int_result
+        assert float_result.tzinfo is None
 
 
 class TestTimestampToDatetimeValidation:
@@ -245,15 +273,11 @@ class TestTimedeltaToReadableDays:
         assert result == "29 days ago"
 
     def test_day_with_hours(self):
-        result = timedelta_to_readable_elapsed_time(
-            timedelta(days=2, hours=5)
-        )
+        result = timedelta_to_readable_elapsed_time(timedelta(days=2, hours=5))
         assert result == "2 days and 5 hours ago"
 
     def test_day_without_extra_hours(self):
-        result = timedelta_to_readable_elapsed_time(
-            timedelta(days=3, minutes=30)
-        )
+        result = timedelta_to_readable_elapsed_time(timedelta(days=3, minutes=30))
         assert result == "3 days ago"
 
 
@@ -274,15 +298,11 @@ class TestTimedeltaToReadableHours:
         assert result == "23 hours ago"
 
     def test_hour_with_minutes(self):
-        result = timedelta_to_readable_elapsed_time(
-            timedelta(hours=1, minutes=30)
-        )
+        result = timedelta_to_readable_elapsed_time(timedelta(hours=1, minutes=30))
         assert result == "1 hour and 30 minutes ago"
 
     def test_hours_without_extra_minutes(self):
-        result = timedelta_to_readable_elapsed_time(
-            timedelta(hours=2, seconds=45)
-        )
+        result = timedelta_to_readable_elapsed_time(timedelta(hours=2, seconds=45))
         assert result == "2 hours ago"
 
 
@@ -320,15 +340,11 @@ class TestTimedeltaToReadableZeroDelta:
         assert result == "just now"
 
     def test_custom_zero_label(self):
-        result = timedelta_to_readable_elapsed_time(
-            timedelta(seconds=10), zero_delta_label="moments ago"
-        )
+        result = timedelta_to_readable_elapsed_time(timedelta(seconds=10), zero_delta_label="moments ago")
         assert result == "moments ago"
 
     def test_zero_label_has_no_suffix(self):
-        result = timedelta_to_readable_elapsed_time(
-            timedelta(0), suffix="ago"
-        )
+        result = timedelta_to_readable_elapsed_time(timedelta(0), suffix="ago")
         assert result == "just now"
 
 
@@ -341,21 +357,15 @@ class TestTimedeltaToReadableSuffix:
         assert result == "1 hour ago"
 
     def test_custom_suffix(self):
-        result = timedelta_to_readable_elapsed_time(
-            timedelta(hours=1), suffix="elapsed"
-        )
+        result = timedelta_to_readable_elapsed_time(timedelta(hours=1), suffix="elapsed")
         assert result == "1 hour elapsed"
 
     def test_empty_suffix(self):
-        result = timedelta_to_readable_elapsed_time(
-            timedelta(hours=1), suffix=""
-        )
+        result = timedelta_to_readable_elapsed_time(timedelta(hours=1), suffix="")
         assert result == "1 hour"
 
     def test_none_suffix(self):
-        result = timedelta_to_readable_elapsed_time(
-            timedelta(hours=1), suffix=None
-        )
+        result = timedelta_to_readable_elapsed_time(timedelta(hours=1), suffix=None)
         assert result == "1 hour"
 
 
@@ -368,21 +378,15 @@ class TestTimedeltaToReadableThreshold:
         assert result == "just now"
 
     def test_none_threshold_shows_seconds(self):
-        result = timedelta_to_readable_elapsed_time(
-            timedelta(seconds=30), zero_delta_threshold=None
-        )
+        result = timedelta_to_readable_elapsed_time(timedelta(seconds=30), zero_delta_threshold=None)
         assert result == "30 seconds ago"
 
     def test_none_threshold_shows_one_second(self):
-        result = timedelta_to_readable_elapsed_time(
-            timedelta(seconds=1), zero_delta_threshold=None
-        )
+        result = timedelta_to_readable_elapsed_time(timedelta(seconds=1), zero_delta_threshold=None)
         assert result == "1 second ago"
 
     def test_none_threshold_zero_delta_still_returns_label(self):
-        result = timedelta_to_readable_elapsed_time(
-            timedelta(0), zero_delta_threshold=None
-        )
+        result = timedelta_to_readable_elapsed_time(timedelta(0), zero_delta_threshold=None)
         assert result == "just now"
 
     def test_custom_threshold_hides_below(self):
@@ -423,15 +427,11 @@ class TestTimedeltaToReadableThreshold:
         assert result == "10 seconds"
 
     def test_wrapper_passes_threshold_none(self):
-        result = time_value_to_readable_elapsed_time(
-            30, zero_delta_threshold=None
-        )
+        result = time_value_to_readable_elapsed_time(30, zero_delta_threshold=None)
         assert result == "30 seconds ago"
 
     def test_wrapper_passes_custom_threshold(self):
-        result = time_value_to_readable_elapsed_time(
-            90, zero_delta_threshold=timedelta(minutes=5)
-        )
+        result = time_value_to_readable_elapsed_time(90, zero_delta_threshold=timedelta(minutes=5))
         assert result == "just now"
 
 
@@ -457,39 +457,27 @@ class TestTimeValueToReadable:
         assert result == "1 hour ago"
 
     def test_milliseconds(self):
-        result = time_value_to_readable_elapsed_time(
-            3_600_000, time_piece="milliseconds"
-        )
+        result = time_value_to_readable_elapsed_time(3_600_000, time_piece="milliseconds")
         assert result == "1 hour ago"
 
     def test_minutes(self):
-        result = time_value_to_readable_elapsed_time(
-            90, time_piece="minutes"
-        )
+        result = time_value_to_readable_elapsed_time(90, time_piece="minutes")
         assert result == "1 hour and 30 minutes ago"
 
     def test_hours(self):
-        result = time_value_to_readable_elapsed_time(
-            2, time_piece="hours"
-        )
+        result = time_value_to_readable_elapsed_time(2, time_piece="hours")
         assert result == "2 hours ago"
 
     def test_days(self):
-        result = time_value_to_readable_elapsed_time(
-            7, time_piece="days"
-        )
+        result = time_value_to_readable_elapsed_time(7, time_piece="days")
         assert result == "7 days ago"
 
     def test_weeks(self):
-        result = time_value_to_readable_elapsed_time(
-            2, time_piece="weeks"
-        )
+        result = time_value_to_readable_elapsed_time(2, time_piece="weeks")
         assert result == "14 days ago"
 
     def test_float_value(self):
-        result = time_value_to_readable_elapsed_time(
-            1.5, time_piece="hours"
-        )
+        result = time_value_to_readable_elapsed_time(1.5, time_piece="hours")
         assert result == "1 hour and 30 minutes ago"
 
     def test_zero_value(self):
@@ -497,15 +485,11 @@ class TestTimeValueToReadable:
         assert result == "just now"
 
     def test_passes_suffix(self):
-        result = time_value_to_readable_elapsed_time(
-            3600, suffix="elapsed"
-        )
+        result = time_value_to_readable_elapsed_time(3600, suffix="elapsed")
         assert result == "1 hour elapsed"
 
     def test_passes_zero_delta_label(self):
-        result = time_value_to_readable_elapsed_time(
-            0, zero_delta_label="now"
-        )
+        result = time_value_to_readable_elapsed_time(0, zero_delta_label="now")
         assert result == "now"
 
 

@@ -113,9 +113,7 @@ class TestSaveJsonToFile:
         file = tmp_path / "compact.json"
         data = {"key": "value"}
 
-        save_json_to_file(
-            data, file, dump_kwargs={"indent": None, "ensure_ascii": False}
-        )
+        save_json_to_file(data, file, dump_kwargs={"indent": None, "ensure_ascii": False})
         content = file.read_text(encoding="utf-8")
         # No indentation means no newlines inside the object
         assert "\n" not in content.strip() or content.count("\n") <= 1
@@ -130,6 +128,19 @@ class TestLoadJsonObjectHook:
         result = load_json_from_file(file)
         assert result["zip_code"] == 90210
         assert isinstance(result["zip_code"], int)
+
+    def test_default_hook_keeps_floats_booleans_and_nulls(self, tmp_path: Path) -> None:
+        file = tmp_path / "data.json"
+        file.write_text('{"price": 9.99, "active": true, "deleted": false, "note": null}', encoding="utf-8")
+
+        result = load_json_from_file(file)
+
+        assert isinstance(result, dict)
+        assert result["price"] == 9.99
+        assert isinstance(result["price"], float)
+        assert result["active"] is True
+        assert result["deleted"] is False
+        assert result["note"] is None
 
     def test_none_hook_preserves_strings(self, tmp_path):
         """Bug 10 fix: passing None disables type coercion."""

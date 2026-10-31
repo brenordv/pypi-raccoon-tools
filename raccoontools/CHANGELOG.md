@@ -1,5 +1,28 @@
 # Changelog
 
+## [3.7.0]
+
+### Changed
+- `requests_with_retry` sends `global_timeout` (new, default 30 seconds) as the requests `timeout` unless the caller
+  passes one. Requests without a timeout could hang forever, and `retry_request` only retries on status codes.
+  Pass `timeout=None` to keep the old behavior.
+- `timestamp_to_datetime(<float>, tz=None)` returns naive UTC, the same as for `int` input. It used to return naive
+  local time for floats.
+- Dependencies updated: `simple-log-factory` 2.0.0, `pydantic` 2.14, `idna` 3.20. The `urllib3` and `idna` security
+  pins are now floors (`>=`), so consumers can take later security patches without a new release.
+- Packaging uses an SPDX license expression (`license = "MIT"`); the deprecated license table and classifier are gone.
+- Dev dependencies moved to the `dev` dependency group, with ruff, mypy and pytest-cov; tests mirror the package layout.
+
+### Fixed
+- `load_json_from_file` with the default object hook no longer truncates floats (`9.99` loaded as `9`) or turns
+  booleans into integers (`true` loaded as `1`). `obj_dump_deserializer` only converts strings.
+- `serialize_to_dict` accepts lists of primitives (`{"tags": ["a", "b"]}` raised `ValueError`), which also fixes
+  `requests_with_retry.post(json=...)` for such payloads. Dicts inside lists are now serialized recursively like
+  top-level dicts, and tuples are serialized as lists at any depth.
+- Changing the `requests_with_retry.global_*` settings after import now takes effect; they were read once at import.
+  The retry decorator is rebuilt only when a setting changes, so the retry logger is not reconfigured per request.
+- The `retry_request` docstring now says that `retry_only_on_status_codes=None` retries any status of 400 or above.
+
 ## [3.6.0]
 
 ### Added

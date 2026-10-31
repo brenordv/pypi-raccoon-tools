@@ -41,9 +41,7 @@ class TestIdIntGenerator:
         assert ids == [100, 101, 102]
 
     def test_with_validation_filter(self):
-        even_ids = list(
-            id_int_generator(5, start_at=0, validate_id=lambda x: x % 2 == 0)
-        )
+        even_ids = list(id_int_generator(5, start_at=0, validate_id=lambda x: x % 2 == 0))
         assert even_ids == [0, 2, 4, 6, 8]
 
     def test_zero_generates_nothing(self):

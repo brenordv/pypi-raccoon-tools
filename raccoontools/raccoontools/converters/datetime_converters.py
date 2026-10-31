@@ -1,13 +1,20 @@
 import math
-from datetime import datetime, timedelta, timezone, tzinfo
+from datetime import UTC, datetime, timedelta, tzinfo
 
-EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
+EPOCH = datetime(1970, 1, 1, tzinfo=UTC)
 
 _VALID_UNITS = frozenset({"s", "ms", "us", "ns"})
 
-_VALID_TIME_PIECES = frozenset({
-    "milliseconds", "seconds", "minutes", "hours", "days", "weeks",
-})
+_VALID_TIME_PIECES = frozenset(
+    {
+        "milliseconds",
+        "seconds",
+        "minutes",
+        "hours",
+        "days",
+        "weeks",
+    }
+)
 
 _INT_UNIT_TO_MICROSECONDS = {
     "s": (1_000_000, 1),
@@ -27,7 +34,7 @@ _FLOAT_UNIT_TO_SECONDS_DIVISOR = {
 def timestamp_to_datetime(
     timestamp: int | float,
     unit: str = "ms",
-    tz: tzinfo | None = timezone.utc,
+    tz: tzinfo | None = UTC,
 ) -> datetime:
     """
     Convert a numeric timestamp to a datetime object.
@@ -40,7 +47,7 @@ def timestamp_to_datetime(
         unit (str): Unit of the input: "s", "ms", "us", or "ns".
             Default is "ms".
         tz (tzinfo | None): Target timezone. Defaults to "timezone.utc".
-            Pass "None" to get a naive datetime (discouraged).
+            Pass "None" to get a naive datetime in UTC (discouraged).
 
     Returns:
         datetime: Timezone-aware datetime by default (UTC).
@@ -55,14 +62,10 @@ def timestamp_to_datetime(
         (2023, 11, 14)
     """
     if unit not in _VALID_UNITS:
-        raise ValueError(
-            f"Invalid unit '{unit}'. Must be one of: {', '.join(sorted(_VALID_UNITS))}."
-        )
+        raise ValueError(f"Invalid unit '{unit}'. Must be one of: {', '.join(sorted(_VALID_UNITS))}.")
 
     if isinstance(timestamp, float) and not math.isfinite(timestamp):
-        raise ValueError(
-            f"Timestamp must be a finite number, got {timestamp}."
-        )
+        raise ValueError(f"Timestamp must be a finite number, got {timestamp}.")
 
     if isinstance(timestamp, int):
         return _convert_int(timestamp, unit, tz)
@@ -77,7 +80,7 @@ def _convert_int(timestamp: int, unit: str, tz: tzinfo | None) -> datetime:
 
     result = EPOCH + timedelta(microseconds=microseconds)
 
-    if tz is not None and tz != timezone.utc:
+    if tz is not None and tz != UTC:
         result = result.astimezone(tz)
     elif tz is None:
         result = result.replace(tzinfo=None)
@@ -86,8 +89,13 @@ def _convert_int(timestamp: int, unit: str, tz: tzinfo | None) -> datetime:
 
 
 def _convert_float(timestamp: float, unit: str, tz: tzinfo | None) -> datetime:
-    """Convert a float timestamp via datetime.fromtimestamp."""
+    """Convert a float timestamp via datetime.fromtimestamp.
+
+    With ``tz=None`` the result is naive UTC, like the int path; ``fromtimestamp`` itself would return local time.
+    """
     seconds = timestamp / _FLOAT_UNIT_TO_SECONDS_DIVISOR[unit]
+    if tz is None:
+        return datetime.fromtimestamp(seconds, tz=UTC).replace(tzinfo=None)
     return datetime.fromtimestamp(seconds, tz=tz)
 
 
@@ -160,9 +168,7 @@ def timedelta_to_readable_elapsed_time(
         '30 seconds ago'
     """
     if delta < timedelta(0):
-        raise ValueError(
-            f"delta must be non-negative, got {delta!r}."
-        )
+        raise ValueError(f"delta must be non-negative, got {delta!r}.")
 
     if zero_delta_threshold is not None and delta < zero_delta_threshold:
         return zero_delta_label
@@ -255,20 +261,13 @@ def time_value_to_readable_elapsed_time(
         '2 days ago'
     """
     if time_piece not in _VALID_TIME_PIECES:
-        raise ValueError(
-            f"Invalid time_piece '{time_piece}'. "
-            f"Must be one of: {', '.join(sorted(_VALID_TIME_PIECES))}."
-        )
+        raise ValueError(f"Invalid time_piece '{time_piece}'. Must be one of: {', '.join(sorted(_VALID_TIME_PIECES))}.")
 
     if isinstance(value, float) and not math.isfinite(value):
-        raise ValueError(
-            f"value must be a finite number, got {value}."
-        )
+        raise ValueError(f"value must be a finite number, got {value}.")
 
     if value < 0:
-        raise ValueError(
-            f"value must be non-negative, got {value}."
-        )
+        raise ValueError(f"value must be non-negative, got {value}.")
 
     delta = timedelta(**{time_piece: value})
     return timedelta_to_readable_elapsed_time(

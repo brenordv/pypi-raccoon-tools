@@ -4,14 +4,16 @@ from collections.abc import Callable
 from datetime import datetime
 from io import StringIO
 from pathlib import Path
+from typing import Any
 
 from pydantic import BaseModel
 
-
 _PATH_LIB_OBJ_TAG = "[PATHLIBOBJ]"
 
+_JSON_PRIMITIVE_TYPES = (str, int, float, bool)
 
-def obj_to_dict(obj) -> dict:
+
+def obj_to_dict(obj: Any) -> dict[Any, Any]:
     """
     Tries to convert an object to dict
     :param obj: Object that we'll try to convert to dict.
@@ -25,7 +27,7 @@ def obj_to_dict(obj) -> dict:
         # If it's a BaseModel, convert it to a dict using model_dump (Pydantic v2).
         return obj.model_dump()
 
-    if hasattr(obj, '__dict__'):
+    if hasattr(obj, "__dict__"):
         # If it's an object, convert it to a dict using the __dict__ attribute.
         return obj.__dict__
 
@@ -36,11 +38,12 @@ def obj_to_dict(obj) -> dict:
     raise ValueError(f"Could not convert object of type {type(obj)} to a dict.")
 
 
-def serialize_to_dict(obj, obj_serializer: Callable | None = None) -> dict | list[dict] | None:
+def serialize_to_dict(obj: Any, obj_serializer: Callable | None = None) -> dict[Any, Any] | list[Any] | None:
     """
-    Serialize obj to a dict or a list of dicts. Useful when sending complex objects in http requests.
-    If the obj passed is a dict, will iterate over all the properties and convert them to dicts.
-    Remarks: This scans the object recursively.
+    Serialize obj to a dict or a list. Useful when sending complex objects in http requests.
+    Dict values and list or tuple items are scanned recursively: strings, numbers, booleans and None are kept as they
+    are, nested dicts, lists and tuples are serialized the same way (tuples become lists, as JSON has no tuples), and
+    any other object is converted with ``obj_to_dict``.
 
     :param obj: The object to be serialized
     :param obj_serializer: Deprecated. This parameter is no longer used and will be removed in a future version.
@@ -51,25 +54,21 @@ def serialize_to_dict(obj, obj_serializer: Callable | None = None) -> dict | lis
 
     if obj_serializer is not None:
         warnings.warn(
-            "The 'obj_serializer' parameter is deprecated and will be "
-            "removed in a future version.",
+            "The 'obj_serializer' parameter is deprecated and will be removed in a future version.",
             DeprecationWarning,
             stacklevel=2,
         )
 
-    if isinstance(obj, list):
-        serialized = [obj_to_dict(item) for item in obj]
-    elif isinstance(obj, dict):
-        serialized = {}
-        for key, value in obj.items():
-            if isinstance(value, (str, int, float, bool)):
-                serialized[key] = value
-            else:
-                serialized[key] = serialize_to_dict(value)
-    else:
-        serialized = obj_to_dict(obj)
+    if isinstance(obj, (list, tuple)):
+        return [item if isinstance(item, _JSON_PRIMITIVE_TYPES) else serialize_to_dict(item) for item in obj]
 
-    return serialized
+    if isinstance(obj, dict):
+        return {
+            key: value if isinstance(value, _JSON_PRIMITIVE_TYPES) else serialize_to_dict(value)
+            for key, value in obj.items()
+        }
+
+    return obj_to_dict(obj)
 
 
 def parse_csv(csv_data: str) -> list[dict]:
@@ -85,8 +84,7 @@ def parse_csv(csv_data: str) -> list[dict]:
 
 
 def csv_string_to_dict_list(
-        data: str | list[str] | dict | list[dict],
-        no_data_return: str = "No data available"
+    data: str | list[str] | dict | list[dict], no_data_return: str = "No data available"
 ) -> list[dict] | str:
     """
     Converts a CSV string to a list of dictionaries.
@@ -122,7 +120,7 @@ def dataset_to_prompt_text(dataset: list[dict]) -> str:
 
     data = []
     for row in dataset:
-        item ={}
+        item = {}
         for key, value in row.items():
             if isinstance(value, datetime):
                 item[key] = value.strftime("%Y-%m-%d %H:%M:%S.%f")
@@ -135,7 +133,7 @@ def dataset_to_prompt_text(dataset: list[dict]) -> str:
     return str(data)
 
 
-def obj_dump_serializer(obj, deep_serialization: bool = True, pathlib_obj_tag: str = _PATH_LIB_OBJ_TAG):
+def obj_dump_serializer(obj: Any, deep_serialization: bool = True, pathlib_obj_tag: str = _PATH_LIB_OBJ_TAG) -> Any:
     """
     Used to serialize objects when saving data to file.
 
@@ -170,7 +168,12 @@ def obj_dump_serializer(obj, deep_serialization: bool = True, pathlib_obj_tag: s
         return [obj_dump_serializer(item, deep_serialization, pathlib_obj_tag) for item in obj]
 
     elif isinstance(obj, dict) and deep_serialization:
-        return {obj_dump_serializer(k, deep_serialization, pathlib_obj_tag): obj_dump_serializer(v, deep_serialization, pathlib_obj_tag) for k, v in obj.items()}
+        return {
+            obj_dump_serializer(k, deep_serialization, pathlib_obj_tag): obj_dump_serializer(
+                v, deep_serialization, pathlib_obj_tag
+            )
+            for k, v in obj.items()
+        }
 
     elif isinstance(obj, str):
         return obj
@@ -181,11 +184,12 @@ def obj_dump_serializer(obj, deep_serialization: bool = True, pathlib_obj_tag: s
         raise TypeError(f"Object of type {type(obj)} is not serializable") from e
 
 
-def obj_dump_deserializer(obj, pathlib_obj_tag: str = _PATH_LIB_OBJ_TAG):
+def obj_dump_deserializer(obj: Any, pathlib_obj_tag: str = _PATH_LIB_OBJ_TAG) -> Any:
     """
     Used to deserialize objects when loading data from file.
 
     Remarks:
+    - Only strings are converted. Numbers, booleans, None and lists decoded by the JSON parser are returned unchanged.
     - Datetime objects are deserialized from iso format.
     - When deserializing an object of type Path, it will convert by loading the path from the string with the tag. This
     does not check or guarantee that the path exists.
@@ -195,7 +199,12 @@ def obj_dump_deserializer(obj, pathlib_obj_tag: str = _PATH_LIB_OBJ_TAG):
     :return: The deserialized object.
     """
     if isinstance(obj, dict):
-        return {obj_dump_deserializer(k, pathlib_obj_tag): obj_dump_deserializer(v, pathlib_obj_tag) for k, v in obj.items()}
+        return {
+            obj_dump_deserializer(k, pathlib_obj_tag): obj_dump_deserializer(v, pathlib_obj_tag) for k, v in obj.items()
+        }
+
+    if not isinstance(obj, str):
+        return obj
 
     try:
         return datetime.fromisoformat(obj)
@@ -212,9 +221,8 @@ def obj_dump_deserializer(obj, pathlib_obj_tag: str = _PATH_LIB_OBJ_TAG):
     except (TypeError, ValueError):
         pass
 
-    if isinstance(obj, str) and obj.startswith(pathlib_obj_tag):
-        path = Path(obj[len(pathlib_obj_tag):])
+    if obj.startswith(pathlib_obj_tag):
+        path = Path(obj[len(pathlib_obj_tag) :])
         return path
-
 
     return obj

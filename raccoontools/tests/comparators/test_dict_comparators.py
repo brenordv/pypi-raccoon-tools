@@ -51,9 +51,7 @@ class TestDictsAreEqual:
         assert dicts_are_equal({"t": dt}, {"t": datetime(2024, 1, 1, 12, 0, 0)})
 
     def test_datetime_values_unequal(self):
-        assert not dicts_are_equal(
-            {"t": datetime(2024, 1, 1)}, {"t": datetime(2024, 1, 2)}
-        )
+        assert not dicts_are_equal({"t": datetime(2024, 1, 1)}, {"t": datetime(2024, 1, 2)})
 
     def test_nested_list_order_is_significant(self):
         # Lists nested inside dicts follow native '==' (order matters).
@@ -105,9 +103,7 @@ class TestCompareDicts:
         a = {"user": {"address": {"zip": "12345"}}}
         b = {"user": {"address": {"zip": "54321"}}}
         result = compare_dicts(a, b)
-        assert result.differences.changed == {
-            "user.address.zip": ("12345", "54321")
-        }
+        assert result.differences.changed == {"user.address.zip": ("12345", "54321")}
 
     def test_nested_added_and_removed_paths(self):
         a = {"user": {"name": "Ada"}}

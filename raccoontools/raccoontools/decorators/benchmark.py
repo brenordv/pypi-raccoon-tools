@@ -1,13 +1,9 @@
 import logging
 from collections.abc import Callable
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from functools import wraps
 from timeit import default_timer as timer
-from typing import Any
-
-from typing import TypedDict
-
-UTC = timezone.utc
+from typing import Any, TypedDict
 
 
 class TimerInfo(TypedDict):
@@ -37,7 +33,7 @@ def benchmark(func: Callable) -> Callable:
     elapsed_time: timedelta | None = None
 
     @wraps(func)
-    def wrapper(*args, **kwargs) -> Any:
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         nonlocal started_at
         nonlocal stopped_at
         nonlocal start_timer
@@ -63,9 +59,10 @@ def benchmark(func: Callable) -> Callable:
             "stopped_at": stopped_at,
             "start_timer": start_timer,
             "end_timer": end_timer,
-            "elapsed_time": elapsed_time
+            "elapsed_time": elapsed_time,
         }
 
-    wrapper.get_benchmark_info = get_benchmark_info
+    # Function attributes are set at runtime; the type of a wraps() result does not declare them.
+    wrapper.get_benchmark_info = get_benchmark_info  # type: ignore[attr-defined]
 
     return wrapper

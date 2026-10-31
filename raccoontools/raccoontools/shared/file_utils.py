@@ -1,18 +1,16 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from uuid import uuid4
 
-UTC = timezone.utc
-
 
 def get_filename_for_new_file(
-        file_extension: str,
-        prefix: str | None = None,
-        add_current_datetime_as_format: str = "%Y%m%d%H%M%S%f",
-        use_utc: bool = True,
-        unique_identifier: str | bool = True,
-        part_separator: str = "-",
-        suffix: str | None = None
+    file_extension: str,
+    prefix: str | None = None,
+    add_current_datetime_as_format: str = "%Y%m%d%H%M%S%f",
+    use_utc: bool = True,
+    unique_identifier: str | bool = True,
+    part_separator: str = "-",
+    suffix: str | None = None,
 ) -> str:
     """
     Generates a filename for a new file.
@@ -54,12 +52,12 @@ def get_filename_for_new_file(
 
 
 def get_date_based_subfolder(
-        ref_path: Path | str,
-        use_utc: bool = True,
-        date_ref: datetime | None = None,
-        add_delta_days: int | None = None,
-        date_format: str = "%Y-%m-%d",
-        create_if_missing: bool = True
+    ref_path: Path | str,
+    use_utc: bool = True,
+    date_ref: datetime | None = None,
+    add_delta_days: int | None = None,
+    date_format: str = "%Y-%m-%d",
+    create_if_missing: bool = True,
 ) -> Path:
     """
     Gets a subfolder for the reference date. Using the specified date format (by default YYYY-MM-DD).

@@ -35,7 +35,7 @@ class TestLinefy:
     def test_combined_scenario_using_literal(self):
         text = """Hello world\t\tafter tabs!
         Ping?
-        
+
         Pong!\t
         """
         assert linefy(text) == "Hello world after tabs! Ping? Pong!"

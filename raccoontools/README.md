@@ -24,12 +24,14 @@ from raccoontools.decorators.retry import retry
 
 attempts = {"count": 0}
 
+
 @retry(retries=4, delay=0.25)
 def flaky_operation():
     attempts["count"] += 1
     if attempts["count"] < 3:
         raise RuntimeError("Still failing...")
     return "Success!"
+
 
 print(flaky_operation())
 ```
@@ -44,7 +46,7 @@ It also provides options to handle specific HTTP status codes.
 - `delay`: Delay in seconds between each retry (default: 1).
 - `delay_is_exponential`: If True, the delay between retries will increase exponentially (default: False).
 - `skip_retry_on_404`: If True, the decorator will not retry on 404 responses (default: False).
-- `retry_only_on_status_codes`: A list of HTTP status codes to retry on. If None, no retries will be made.
+- `retry_only_on_status_codes`: A list of HTTP status codes to retry on. If None or empty, any status code of 400 or above is retried.
 - `get_new_token_on_401`: An optional callable to execute and get a new token when a 401 response is received.
 - `get_new_token_on_403`: An optional callable to execute and get a new token when a 403 response is received.
 - `log_level`: The log level used by the decorator (default: logging.ERROR).
@@ -54,9 +56,11 @@ It also provides options to handle specific HTTP status codes.
 import requests
 from raccoontools.decorators.retry import retry_request
 
+
 @retry_request(retries=5, delay=1, skip_retry_on_404=True)
 def call_service():
     return requests.get("https://httpbin.org/status/500")
+
 
 response = call_service()
 print(response.status_code)
@@ -72,10 +76,12 @@ The decorated function can also provide benchmark information via the `get_bench
 import time
 from raccoontools.decorators.benchmark import benchmark
 
+
 @benchmark
 def slow_function():
     time.sleep(0.5)
     return "done"
+
 
 slow_function()
 print(slow_function.get_benchmark_info())
@@ -204,7 +210,7 @@ preserve full microsecond precision without IEEE-754 float rounding.
 **Parameters:**
 - `timestamp`: The numeric timestamp value (`int` or `float`).
 - `unit`: Unit of the input: `"s"`, `"ms"`, `"us"`, or `"ns"` (default: `"ms"`).
-- `tz`: Target timezone (default: `timezone.utc`). Pass `None` to get a naive datetime.
+- `tz`: Target timezone (default: `timezone.utc`). Pass `None` to get a naive datetime in UTC.
 
 **Example:**
 ```python
@@ -223,6 +229,7 @@ print(dt.microsecond)  # 123456
 
 # Custom timezone
 from datetime import timezone, timedelta
+
 tz_ist = timezone(timedelta(hours=5, minutes=30))
 dt = timestamp_to_datetime(1_700_000_000_000, tz=tz_ist)
 print(dt)  # 2023-11-15 03:43:20+05:30
@@ -307,9 +314,9 @@ result = compare_dicts(
     {"name": "Ada", "role": "dev"},
     {"name": "Ada", "role": "lead", "active": True},
 )
-print(result.are_equal)              # False
-print(result.differences.changed)    # {'role': ('dev', 'lead')}
-print(result.differences.added)      # {'active': True}
+print(result.are_equal)  # False
+print(result.differences.changed)  # {'role': ('dev', 'lead')}
+print(result.differences.added)  # {'active': True}
 ```
 
 ### `dict_lists_are_equal` / `compare_dict_lists`
@@ -326,7 +333,7 @@ from raccoontools.comparators.dict_comparators import dict_lists_are_equal, comp
 print(dict_lists_are_equal([{"id": 1}, {"id": 2}], [{"id": 2}, {"id": 1}]))  # True
 
 result = compare_dict_lists([{"id": 1}, {"id": 2}], [{"id": 2}, {"id": 3}])
-print(result.are_equal)              # False
+print(result.are_equal)  # False
 print(result.differences.only_in_a)  # [{'id': 1}]
 print(result.differences.only_in_b)  # [{'id': 3}]
 ```
@@ -336,7 +343,7 @@ print(result.differences.only_in_b)  # [{'id': 3}]
 ### `file_ops`
 Provides functions to load and save JSON data to and from files.
 
-- `load_json_from_file(file: Path | str, encoding: str = "utf-8", object_hook: Callable | None = obj_dump_deserializer) -> dict | list[dict]`: Loads a JSON file and returns the data as a dictionary or list of dictionaries. Accepts a `Path` or a string path. By default, uses `obj_dump_deserializer` to reconstruct types (datetime, int, float, Path). Pass `object_hook=None` for raw JSON parsing with no type coercion.
+- `load_json_from_file(file: Path | str, encoding: str = "utf-8", object_hook: Callable | None = obj_dump_deserializer) -> dict | list[dict]`: Loads a JSON file and returns the data as a dictionary or list of dictionaries. Accepts a `Path` or a string path. By default, uses `obj_dump_deserializer` to reconstruct types (datetime, int, float, Path) from string values; numbers, booleans and nulls keep the type JSON gave them. Pass `object_hook=None` for raw JSON parsing with no type coercion.
 - `save_json_to_file(data: dict | list[dict], target_file_or_folder: Path | str, dump_kwargs: dict | None = None, encoding: str = "utf-8") -> Path`: Saves a dictionary or list of dictionaries to a JSON file. Accepts a `Path` or a string path (an empty string raises `ValueError`).
 
 **Example:**
@@ -392,11 +399,7 @@ Provides utility functions for HTTP headers.
 ```python
 from raccoontools.shared.http import get_headers
 
-headers = get_headers(
-    token="abc123",
-    fake_browser_user_agent=True,
-    extra_args={"X-Trace-Id": "req-1"}
-)
+headers = get_headers(token="abc123", fake_browser_user_agent=True, extra_args={"X-Trace-Id": "req-1"})
 print(headers)
 ```
 
@@ -411,10 +414,16 @@ A wrapper around requests using the `retry_request` decorator. Can be used as a 
 - `patch(url, data=None, **kwargs) -> requests.Response`: Sends a PATCH request with retry functionality.
 - `delete(url, **kwargs) -> requests.Response`: Sends a DELETE request with retry functionality.
 
+Module settings (`global_retries`, `global_delay`, `global_delay_is_exponential`, `global_skip_retry_on_404`,
+`global_retry_only_on_status_codes`, `global_get_new_token_on_401`, `global_get_new_token_on_403`, `global_timeout`)
+apply to every call and are read per request, so changing them takes effect on the next call. `global_timeout`
+(default 30 seconds) is sent as the requests `timeout` unless you pass `timeout` yourself; `timeout=None` disables it.
+
 **Example:**
 ```python
 import raccoontools.shared.requests_with_retry as requests
 
+requests.global_retries = 5
 response = requests.get("https://httpbin.org/status/500")
 print(response.status_code)
 ```
@@ -422,21 +431,23 @@ print(response.status_code)
 ### `serializer`
 Provides functions to serialize and deserialize objects.
 
-- `serialize_to_dict(obj) -> dict | list[dict] | None`: Serializes an object to a dictionary or list of dictionaries.
+- `serialize_to_dict(obj) -> dict | list | None`: Serializes an object to a dictionary or list. Dict values and list or tuple items are processed recursively; strings, numbers, booleans and `None` are kept as they are, and tuples become lists.
 - `parse_csv(csv_data: str) -> list[dict]`: Parses a CSV string and returns a list of dictionaries.
 - `csv_string_to_dict_list(data: str | list[str] | dict | list[dict], no_data_return: str = "No data available") -> list[dict] | str`: Converts a CSV string to a list of dictionaries.
 - `dataset_to_prompt_text(dataset: list[dict]) -> str`: Converts a dataset to a prompt text.
 - `obj_dump_serializer(obj)`: Serializes objects for saving data to a file.
-- `obj_dump_deserializer(obj)`: Deserializes objects when loading data from a file.
+- `obj_dump_deserializer(obj)`: Deserializes objects when loading data from a file. Only strings are converted; numbers, booleans and `None` are returned unchanged.
 
 **Example:**
 ```python
 from pydantic import BaseModel
 from raccoontools.shared.serializer import serialize_to_dict, csv_string_to_dict_list
 
+
 class User(BaseModel):
     name: str
     active: bool
+
 
 payload = serialize_to_dict(User(name="Ada", active=True))
 print(payload)  # {'name': 'Ada', 'active': True}

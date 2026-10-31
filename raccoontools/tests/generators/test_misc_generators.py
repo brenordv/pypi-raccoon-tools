@@ -1,5 +1,3 @@
-import pytest
-
 from raccoontools.generators.misc_generators import infinite_iterator
 
 

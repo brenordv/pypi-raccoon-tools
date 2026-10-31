@@ -1,11 +1,4 @@
-from datetime import datetime
-
-try:
-    from datetime import UTC
-except ImportError:
-    from datetime import timezone
-
-    UTC = timezone.utc
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
@@ -138,6 +131,27 @@ class TestSerializeToDict:
         result = serialize_to_dict(data)
         assert result == data
 
+    def test_dict_with_lists_of_primitives_is_kept(self) -> None:
+        data = {"tags": ["a", "b"], "ids": [1, 2], "flags": [True, None], "note": None}
+
+        assert serialize_to_dict(data) == data
+
+    def test_list_of_primitives_is_kept(self) -> None:
+        assert serialize_to_dict([1, "a", 2.5, None, False]) == [1, "a", 2.5, None, False]
+
+    def test_models_nested_in_dict_lists_are_serialized(self) -> None:
+        class Item(BaseModel):
+            name: str
+
+        result = serialize_to_dict({"items": [Item(name="a"), Item(name="b")], "groups": [["x"], []]})
+
+        assert result == {"items": [{"name": "a"}, {"name": "b"}], "groups": [["x"], []]}
+
+    def test_tuples_become_lists_at_any_depth(self) -> None:
+        result = serialize_to_dict([{"point": (1, 2)}, ("a", "b")])
+
+        assert result == [{"point": [1, 2]}, ["a", "b"]]
+
 
 # ---------------------------------------------------------------------------
 # obj_dump_serializer
@@ -211,6 +225,13 @@ class TestObjDumpDeserializer:
         result = obj_dump_deserializer({"count": "42", "name": "test"})
         assert result["count"] == 42
         assert result["name"] == "test"
+
+    @pytest.mark.parametrize("value", [9.99, 7, True, False, None, [1, "2"]])
+    def test_non_string_value_is_returned_unchanged(self, value: object) -> None:
+        result = obj_dump_deserializer(value)
+
+        assert result == value
+        assert type(result) is type(value)
 
 
 # ---------------------------------------------------------------------------
