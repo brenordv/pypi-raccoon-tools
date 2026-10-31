@@ -66,23 +66,18 @@ class DictListComparison(NamedTuple):
 def _ensure_dict(value: Any, name: str) -> None:
     """Raise ``TypeError`` if *value* is not a ``dict``."""
     if not isinstance(value, dict):
-        raise TypeError(
-            f"Expected '{name}' to be a dict, got {type(value).__name__}."
-        )
+        raise TypeError(f"Expected '{name}' to be a dict, got {type(value).__name__}.")
 
 
 def _ensure_list_of_dicts(value: Any, name: str) -> None:
     """Raise ``TypeError`` if *value* is not a ``list`` of ``dict`` items."""
     if not isinstance(value, list):
-        raise TypeError(
-            f"Expected '{name}' to be a list, got {type(value).__name__}."
-        )
+        raise TypeError(f"Expected '{name}' to be a list, got {type(value).__name__}.")
 
     for index, item in enumerate(value):
         if not isinstance(item, dict):
             raise TypeError(
-                f"Expected every item in '{name}' to be a dict, but the item "
-                f"at index {index} is {type(item).__name__}."
+                f"Expected every item in '{name}' to be a dict, but the item at index {index} is {type(item).__name__}."
             )
 
 
@@ -209,9 +204,7 @@ def _freeze(value: Any) -> Hashable:
             the recognized container types.
     """
     if isinstance(value, dict):
-        return ("__dict__", frozenset(
-            (_freeze(k), _freeze(v)) for k, v in value.items()
-        ))
+        return ("__dict__", frozenset((_freeze(k), _freeze(v)) for k, v in value.items()))
 
     if isinstance(value, (set, frozenset)):
         return ("__set__", frozenset(_freeze(item) for item in value))
@@ -226,8 +219,7 @@ def _freeze(value: Any) -> Hashable:
         hash(value)
     except TypeError as exc:
         raise TypeError(
-            f"Cannot compare lists containing an unhashable value of type "
-            f"{type(value).__name__}: {value!r}."
+            f"Cannot compare lists containing an unhashable value of type {type(value).__name__}: {value!r}."
         ) from exc
 
     return value

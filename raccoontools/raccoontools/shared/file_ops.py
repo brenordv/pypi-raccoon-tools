@@ -1,23 +1,29 @@
 import json
 from collections.abc import Callable
+from enum import Enum
 from pathlib import Path
+from typing import Any, Literal
 
 from raccoontools.shared.file_utils import get_filename_for_new_file
 from raccoontools.shared.serializer import obj_dump_deserializer, obj_dump_serializer
 
-_USE_DEFAULT_HOOK = object()  # Sentinel to distinguish None from "not provided"
+
+class _DefaultHook(Enum):
+    """Sentinel type that distinguishes "use the default hook" from an explicit ``None``."""
+
+    TOKEN = "default-hook"
 
 
-_JSON_DUMPS_PARAMS = {
-    "indent": 2,
-    "ensure_ascii": True
-}
+_USE_DEFAULT_HOOK = _DefaultHook.TOKEN
+
+
+_JSON_DUMPS_PARAMS: dict[str, Any] = {"indent": 2, "ensure_ascii": True}
 
 
 def load_json_from_file(
-        file: Path | str,
-        encoding: str = "utf-8",
-        object_hook: Callable | None = _USE_DEFAULT_HOOK,
+    file: Path | str,
+    encoding: str = "utf-8",
+    object_hook: Callable | None | Literal[_DefaultHook.TOKEN] = _USE_DEFAULT_HOOK,
 ) -> dict | list[dict]:
     """
     Loads a JSON file and returns the data as dict or List[dict].
@@ -41,15 +47,12 @@ def load_json_from_file(
 
     hook = obj_dump_deserializer if object_hook is _USE_DEFAULT_HOOK else object_hook
 
-    with open(file, "r", encoding=encoding) as f:
+    with open(file, encoding=encoding) as f:
         return json.load(f, object_hook=hook)
 
 
 def save_json_to_file(
-        data: dict | list[dict],
-        target_file_or_folder: Path | str,
-        dump_kwargs: dict | None = None,
-        encoding: str = "utf-8"
+    data: dict | list[dict], target_file_or_folder: Path | str, dump_kwargs: dict | None = None, encoding: str = "utf-8"
 ) -> Path:
     """
     Saves a dict or List[dict] to a JSON file.

@@ -7,11 +7,10 @@ def infinite_iterator(list_to_iterate_over: list[Any]) -> Generator[Any, None, N
     Generate an infinite iterator from a list.
     """
     while True:
-        for item in list_to_iterate_over:
-            yield item
+        yield from list_to_iterate_over
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Example usage of infinite_iterator
     infinite_iter = infinite_iterator([1, 2, 3])
     for i, item_from_list in enumerate(infinite_iter):

@@ -1,9 +1,10 @@
 [project]
 name = "raccoontools-db"
-version = "1.0.1"
+version = "1.1.0"
 description = "A collection of utilities to be used with databases."
 readme = "README.md"
-license = { file = "LICENSE.txt" }
+license = "MIT"
+license-files = ["LICENSE.txt"]
 authors = [
     { name = "Breno RdV", email = "hello@raccoon.ninja" },
 ]
@@ -21,28 +22,32 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "psycopg[binary,pool]~=3.3.4",
-    "simple-log-factory==1.0.0",
+    "psycopg[binary,pool]~=3.3.6",
+    "simple-log-factory==2.0.0",
 
     # Adding this dependency explicitly to solve security issues while requests doesn't catch up. Refs:
     # https://github.com/brenordv/pypi-raccoon-tools/security/dependabot/5
     # https://github.com/brenordv/pypi-raccoon-tools/security/dependabot/6
-    "idna==3.18"
+    "idna>=3.20"
 ]
 requires-python = ">=3.11"
 
 [project.optional-dependencies]
-otel = ["simple-log-factory-ext-otel[psycopg]==1.5.0"]
-fastapi = ["simple-log-factory-ext-otel[fastapi]==1.5.0"]
-all = ["simple-log-factory-ext-otel[fastapi,psycopg]==1.5.0"]
+otel = ["simple-log-factory-ext-otel[psycopg]==2.0.0"]
+fastapi = ["simple-log-factory-ext-otel[fastapi]==2.0.0"]
+all = ["simple-log-factory-ext-otel[fastapi,psycopg]==2.0.0"]
+
+[dependency-groups]
 dev = [
-    "pytest>=9.1.1",
-    "pytest-mock>=3.15.1",
-    "pytest-asyncio>=1.4.0"
+    "pytest==9.2.0",
+    "pytest-cov==7.1.0",
+    "pytest-mock==3.17.0",
+    "pytest-asyncio==1.4.1",
+    "mypy==2.4.1",
+    "ruff==0.17.3",
 ]
 
 [project.urls]
@@ -54,7 +59,26 @@ dev = [
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+# The OTEL integration is an optional extra and is not installed in the dev environment.
+[[tool.mypy.overrides]]
+module = ["simple_log_factory_ext_otel"]
+ignore_missing_imports = true
 
 [build-system]
-requires = ["setuptools>=75", "wheel"]
+requires = ["setuptools>=84.2.1", "wheel>=0.48.0"]
 build-backend = "setuptools.build_meta"

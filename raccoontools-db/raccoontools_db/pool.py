@@ -5,22 +5,22 @@ Provides a module-level singleton connection pool with create/get/close lifecycl
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from psycopg_pool import ConnectionPool
 
-from raccoontools_db._logger import _get_logger
+from raccoontools_db._logger import PackageLogger, _get_logger
 
 _pool: ConnectionPool | None = None
-_logger = None
+_logger: PackageLogger | None = None
 
 
 @dataclass(frozen=True, slots=True)
 class PoolConfig:
     """Configuration for the connection pool."""
 
-    conn_info: str
-    """PostgreSQL connection string."""
+    conn_info: str = field(repr=False)
+    """PostgreSQL connection string. Left out of ``repr`` because it usually carries the password."""
 
     min_size: int = 2
     """Minimum connections in pool."""
@@ -40,7 +40,7 @@ class PoolConfig:
     otel_use_http: bool = True
     """OTLP protocol (HTTP vs gRPC)."""
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.use_otel and not self.otel_service_name:
             raise ValueError("otel_service_name is required when use_otel=True")
 
@@ -61,19 +61,19 @@ def create_pool(config: PoolConfig) -> None:
     global _pool, _logger
 
     if _pool is not None:
-        raise RuntimeError(
-            "Connection pool already exists. Call close_pool() before creating a new one."
-        )
+        raise RuntimeError("Connection pool already exists. Call close_pool() before creating a new one.")
 
     _logger = _get_logger(config)
     _logger.info("Creating database connection pool")
 
-    _pool = ConnectionPool(
+    pool = ConnectionPool(
         conninfo=config.conn_info,
         min_size=config.min_size,
         max_size=config.max_size,
+        open=False,
     )
-    _pool.open()
+    pool.open()
+    _pool = pool
 
     _logger.info("Database connection pool opened")
 
@@ -88,9 +88,7 @@ def get_pool() -> ConnectionPool:
         RuntimeError: If the pool has not been created yet.
     """
     if _pool is None:
-        raise RuntimeError(
-            "Database pool is not initialised. Call create_pool() first."
-        )
+        raise RuntimeError("Database pool is not initialised. Call create_pool() first.")
     return _pool
 
 

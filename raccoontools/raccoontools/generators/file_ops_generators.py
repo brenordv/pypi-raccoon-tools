@@ -23,8 +23,14 @@ class CsvRowMetadata:
     """List of headers if present."""
     headers: list[str] | None = None
 
-    def __init__(self, index: int = 0, data_line_number: int = 0, absolute_line_number: int = 0,
-                 raw_data: str = "", headers: list[str] | None = None):
+    def __init__(
+        self,
+        index: int = 0,
+        data_line_number: int = 0,
+        absolute_line_number: int = 0,
+        raw_data: str = "",
+        headers: list[str] | None = None,
+    ):
         self.index = index
         self.data_line_number = data_line_number
         self.absolute_line_number = absolute_line_number
@@ -32,8 +38,9 @@ class CsvRowMetadata:
         self.headers = headers
 
 
-def read_line(file: str | Path, strip_line: bool = True, encoding: str = "utf-8",
-              buffer_size: int | None = None) -> Generator[str, None, None]:
+def read_line(
+    file: str | Path, strip_line: bool = True, encoding: str = "utf-8", buffer_size: int | None = None
+) -> Generator[str, None, None]:
     """
     Read a file line by line.
 
@@ -65,19 +72,16 @@ def read_line(file: str | Path, strip_line: bool = True, encoding: str = "utf-8"
         to see if it has any impact on performance.
     """
     try:
-        with open(
-                file,
-                "r",
-                encoding=encoding,
-                buffering=buffer_size if buffer_size is not None else -1) as f:
+        with open(file, encoding=encoding, buffering=buffer_size if buffer_size is not None else -1) as f:
             for line in f:
                 yield line.strip() if strip_line else line
-    except IOError as e:
-        raise IOError(f"Error reading file {file}: {str(e)}")
+    except OSError as e:
+        raise OSError(f"Error reading file {file}: {str(e)}")
 
 
-def read_csv(file: str | Path, encoding: str = "utf-8", has_headers: bool = True,
-              buffer_size: int | None = None) -> Generator[tuple[dict | list, CsvRowMetadata], None, None]:
+def read_csv(
+    file: str | Path, encoding: str = "utf-8", has_headers: bool = True, buffer_size: int | None = None
+) -> Generator[tuple[dict | list, CsvRowMetadata], None, None]:
     """
     Read a csv file row by row.
 
@@ -109,8 +113,7 @@ def read_csv(file: str | Path, encoding: str = "utf-8", has_headers: bool = True
     data_line_number = 0
 
     for row_index, raw_line in enumerate(
-            read_line(file, encoding=encoding, strip_line=False, buffer_size=buffer_size),
-        start=1
+        read_line(file, encoding=encoding, strip_line=False, buffer_size=buffer_size), start=1
     ):
         line_without_newline = raw_line.rstrip("\r\n").lstrip("\ufeff")
 
@@ -132,10 +135,10 @@ def read_csv(file: str | Path, encoding: str = "utf-8", has_headers: bool = True
             headers = parsed_row
             continue
 
+        row_data: dict[str, str | None] | list[str]
         if headers is not None:
             row_data = {
-                header: parsed_row[idx] if idx < len(parsed_row) else None
-                for idx, header in enumerate(headers)
+                header: parsed_row[idx] if idx < len(parsed_row) else None for idx, header in enumerate(headers)
             }
             metadata_headers = list(headers)
         else:
@@ -149,7 +152,7 @@ def read_csv(file: str | Path, encoding: str = "utf-8", has_headers: bool = True
             data_line_number=data_line_number,
             absolute_line_number=row_index,
             raw_data=line_without_newline,
-            headers=metadata_headers
+            headers=metadata_headers,
         )
 
         yield row_data, metadata

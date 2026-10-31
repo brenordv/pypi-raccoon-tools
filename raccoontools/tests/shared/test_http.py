@@ -1,5 +1,3 @@
-import pytest
-
 from raccoontools.shared.http import (
     DEFAULT_FAKE_BROWSER_USER_AGENT,
     _get_header_user_agent,
@@ -21,9 +19,7 @@ class TestGetHeaderUserAgent:
         assert result == {"User-Agent": DEFAULT_FAKE_BROWSER_USER_AGENT}
 
     def test_custom_agent_takes_precedence_over_fake(self):
-        result = _get_header_user_agent(
-            user_agent="Custom/1.0", fake_browser_user_agent=True
-        )
+        result = _get_header_user_agent(user_agent="Custom/1.0", fake_browser_user_agent=True)
         assert result == {"User-Agent": "Custom/1.0"}
 
 
@@ -64,9 +60,7 @@ class TestGetHeaders:
         assert headers["X-Custom"] == "value"
 
     def test_fake_browser_agent(self):
-        headers = get_headers(
-            token="t", fake_browser_user_agent=True
-        )
+        headers = get_headers(token="t", fake_browser_user_agent=True)
         assert headers["User-Agent"] == DEFAULT_FAKE_BROWSER_USER_AGENT
 
     def test_custom_user_agent(self):

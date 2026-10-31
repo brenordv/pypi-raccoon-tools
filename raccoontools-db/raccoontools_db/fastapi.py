@@ -6,14 +6,14 @@ to FastAPI's startup/shutdown lifecycle.
 
 from __future__ import annotations
 
-from collections.abc import AsyncGenerator
-from contextlib import asynccontextmanager
+from collections.abc import AsyncGenerator, Callable
+from contextlib import AbstractAsyncContextManager, asynccontextmanager
 from typing import Any
 
 from raccoontools_db.pool import PoolConfig, close_pool, create_pool
 
 
-def create_lifespan(config: PoolConfig):
+def create_lifespan(config: PoolConfig) -> Callable[[Any], AbstractAsyncContextManager[None]]:
     """Create a FastAPI lifespan context manager.
 
     Opens the connection pool on startup and closes it on shutdown.

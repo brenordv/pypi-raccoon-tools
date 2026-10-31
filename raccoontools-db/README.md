@@ -35,7 +35,7 @@ Provides a module-level singleton connection pool with a simple create/get/close
 Configuration dataclass for the connection pool.
 
 **Fields:**
-- `conn_info` *(str)*: PostgreSQL connection string.
+- `conn_info` *(str)*: PostgreSQL connection string. Not included in `repr(config)`, since it usually holds the password.
 - `min_size` *(int)*: Minimum connections in pool (default: 2).
 - `max_size` *(int)*: Maximum connections in pool (default: 10).
 - `use_otel` *(bool)*: Enable OpenTelemetry tracing (default: False).
@@ -97,6 +97,7 @@ from raccoontools_db.pool import PoolConfig, get_pool
 
 config = PoolConfig(conn_info="postgresql://user:pass@localhost:5432/mydb")
 app = FastAPI(lifespan=create_lifespan(config))
+
 
 @app.get("/health")
 def health():

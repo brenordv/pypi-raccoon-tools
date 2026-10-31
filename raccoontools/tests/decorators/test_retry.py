@@ -1,3 +1,4 @@
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -86,12 +87,14 @@ class TestRetryDecorator:
 
     def test_invalid_retries_raises_value_error(self):
         with pytest.raises(ValueError, match="greater than 0"):
+
             @retry(retries=0)
             def noop():
                 pass
 
     def test_invalid_delay_raises_value_error(self):
         with pytest.raises(ValueError, match="greater than or equal to 0"):
+
             @retry(delay=-1)
             def noop():
                 pass
@@ -213,11 +216,24 @@ class TestRetryRequestDecorator:
                 return self._mock_response(401)
             return self._mock_response(200)
 
-        resp = auth_request(
-            headers={"Authorization": "Bearer old-token"}
-        )
+        resp = auth_request(headers={"Authorization": "Bearer old-token"})
         assert resp.status_code == 200
         token_func.assert_called_once()
+
+    @patch("raccoontools.decorators.retry.sleep", return_value=None)
+    def test_get_new_token_on_403_sends_refreshed_token_on_next_attempt(self, mock_sleep: MagicMock) -> None:
+        token_func = MagicMock(return_value="new-token")
+        seen_authorization: list[str] = []
+
+        @retry_request(retries=3, delay=0, get_new_token_on_403=token_func)
+        def forbidden_once(**kwargs: Any) -> MagicMock:
+            seen_authorization.append(kwargs["headers"]["Authorization"])
+            return self._mock_response(403 if len(seen_authorization) == 1 else 200)
+
+        resp = forbidden_once(headers={"Authorization": "Bearer old-token"})
+
+        assert resp.status_code == 200
+        assert seen_authorization == ["Bearer old-token", "Bearer new-token"]
 
     @patch("raccoontools.decorators.retry.sleep", return_value=None)
     def test_does_not_retry_on_client_success(self, mock_sleep):
@@ -231,12 +247,14 @@ class TestRetryRequestDecorator:
 
     def test_invalid_retries_raises_value_error(self):
         with pytest.raises(ValueError, match="greater than 0"):
+
             @retry_request(retries=0)
             def noop():
                 pass
 
     def test_invalid_delay_raises_value_error(self):
         with pytest.raises(ValueError, match="greater than or equal to 0"):
+
             @retry_request(delay=-1)
             def noop():
                 pass

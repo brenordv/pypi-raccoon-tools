@@ -39,6 +39,7 @@ class TestCreatePool:
             conninfo=config.conn_info,
             min_size=config.min_size,
             max_size=config.max_size,
+            open=False,
         )
         mock_pool_cls.return_value.open.assert_called_once()
 
@@ -62,7 +63,44 @@ class TestCreatePool:
             conninfo=config.conn_info,
             min_size=5,
             max_size=20,
+            open=False,
         )
+
+    def test_failed_open_leaves_no_pool_behind(
+        self, config: PoolConfig, mock_deps: tuple[MagicMock, MagicMock]
+    ) -> None:
+        mock_pool_cls, _ = mock_deps
+        mock_pool_cls.return_value.open.side_effect = OSError("connection refused")
+
+        with pytest.raises(OSError, match="connection refused"):
+            create_pool(config)
+
+        with pytest.raises(RuntimeError, match="not initialised"):
+            get_pool()
+
+
+class TestPoolConfig:
+    def test_repr_hides_connection_string(self, config: PoolConfig) -> None:
+        assert "pass" not in repr(config)
+        assert "conn_info" not in repr(config)
+
+    @pytest.mark.parametrize(
+        ("service_name", "endpoint", "message"),
+        [
+            ("", "http://localhost:4318", "otel_service_name is required"),
+            ("my-service", "", "otel_exporter_endpoint is required"),
+        ],
+    )
+    def test_otel_settings_are_required_when_otel_is_enabled(
+        self, service_name: str, endpoint: str, message: str
+    ) -> None:
+        with pytest.raises(ValueError, match=message):
+            PoolConfig(
+                conn_info="postgresql://localhost/db",
+                use_otel=True,
+                otel_service_name=service_name,
+                otel_exporter_endpoint=endpoint,
+            )
 
 
 class TestGetPool:

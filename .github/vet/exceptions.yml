@@ -23,3 +23,17 @@ exceptions:
     id: raccoontools-colorama
     name: colorama
     version: "*"
+
+  # Dev-only tools (the `dev` dependency group, not shipped with the packages). Both repositories are active and not
+  # archived; the ossf-unmaintained filter flags them from an OpenSSF Scorecard activity snapshot.
+  - ecosystem: PyPI
+    expires: "2027-05-08T00:00:00Z"
+    id: raccoontools-pytest-cov
+    name: pytest-cov
+    version: "*"
+
+  - ecosystem: PyPI
+    expires: "2027-05-08T00:00:00Z"
+    id: raccoontools-mypy-extensions
+    name: mypy-extensions
+    version: "*"
