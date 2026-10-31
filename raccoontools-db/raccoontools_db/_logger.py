@@ -5,7 +5,7 @@ Returns an OTEL tracer or a standard logger depending on configuration.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Protocol
 
 if TYPE_CHECKING:
     from raccoontools_db.pool import PoolConfig
@@ -13,7 +13,14 @@ if TYPE_CHECKING:
 _PACKAGE_LOGGER_NAME = "raccoontools_db"
 
 
-def _get_logger(config: PoolConfig):
+class PackageLogger(Protocol):
+    """The logging calls this package makes; ``logging.Logger`` and the OTEL ``TracedLogger`` both satisfy it."""
+
+    def info(self, msg: str, /) -> None:
+        """Log *msg* at INFO level."""
+
+
+def _get_logger(config: PoolConfig) -> PackageLogger:
     """Return a logger/tracer based on config.
 
     Args:
